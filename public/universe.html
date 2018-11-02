@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}uniVERSOS{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/uniVERSOS.js')}}"></script>
+{% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+  <div class="container">
+    <div class="row justify-content-start">
+
+      <p class="poemInstructions">Hagamos un poema entre todos.</p>
+      <p class="poemInstructions">Te mostramos los últimos 5 versos y tú escribes el próximo.</p>
+      
+      <div id="poem">
+	<div id="content_poem">
+	</div>
+	<form id="newVerso">
+	  <input id="publishVerso" class="form-control-feedback" value="➤" type="submit">
+          <input  type="text" class="form-control" id="verse" maxlength="140" required>
+        </form>
+      </div>
+    </div>
+
+    <div class="poemLink">
+      <a class="btn btn-primary btn-upload" href="/poemafinal">Poema Final</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,789 @@
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/roboto_slab.woff2');
+    font-weight: normal
+    font-style: normal;
+}
+@font-face {
+  font-family: 'Cookie';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Cookie-Regular'), url('../fonts/cookie.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@keyframes fadein{
+    from {opacity: 0}
+    to {opacity: 100}
+}
+
+/**
+    color: 128, 0, 38
+    color: 189, 0, 38
+    color: 227, 26, 28
+    color: 252, 78, 42
+    color: 253, 125, 60
+    color: 254, 178, 76
+    color: 254, 217, 118
+    color: 255, 237, 160
+    color: 2
+
+
+*/
+
+/*
+https://stackoverflow.com/questions/27492726/fa-icon-in-bootstrap-input-catch-hover-event-with-css
+*/
+
+#search_clear {
+    background: transparent;
+    border: none;
+    font-family: 'FontAwesome';
+    font-size: 1.3em;
+    color: rgb(128, 0, 38);
+    /* opacity: 0.4; */
+    outline: none; /* override browser to hide blue outline when clicking */
+    pointer-events: auto; /* override bootstrap to allow hovering/clicking */
+}
+
+#search:focus + #search_clear {
+    color: rgb(227, 26, 28);
+    opacity: 0.7;
+}
+
+#search:focus + #search_clear:hover {
+    color: rgb(254, 178, 76);
+    opacity: 1.0;
+}
+
+
+/*
+**************
+*/
+.btn-libraries{
+  margin-bottom: 20px;
+}
+
+.btn-library{
+    background: #bee0dd;
+    color: white;
+    font-size: 12pt;
+    transition: 0.3s;
+    border-radius: 5px;
+    font-size: 20px;
+}
+.btn-library:hover, .btn-library:focus{
+    background: #5bd2c7;
+    color: white;
+    background: #5bd2c7;
+}
+
+.btn-upload{
+    width: 100%;
+    background: rgb(128, 0, 38);
+    border-color: rgb(128, 0, 38);
+    color: white;
+    font-size: 12pt;
+}
+.btn-upload:hover, .btn-upload:focus{
+    background: #5bd2c7;
+}
+
+.panel-warning{
+    border-color: rgb(128, 0, 38);
+}
+
+.panel-warning > .panel-heading {
+    color: white;
+    background-color: rgb(128, 0, 38);
+    border-color: rgb(128, 0, 38);
+  }
+
+.panel-body-background{
+    background:rgb(248, 224, 159);
+    color: black;
+}
+
+.panel-footer-background{
+    border-color: rgb(128, 0, 38);
+    background:rgb(248, 224, 159);
+}
+
+.modal{
+    color: black;
+}
+
+body{
+    background-color: #fff5ef !important;
+    color: #4f5a76 !important;
+}
+
+.btn-upload{
+    color: white !important;
+    background: #bee0dd !important;
+    border: none !important;
+    border-radius: 5px !important;
+    margin-bottom: 20px !important;
+}
+
+.btn-upload:hover{
+    background: #5bd2c7 !important;
+}
+
+.page-head-line{
+    font-family: RobotoSlab !important;
+    text-align:center !important;
+    color: #4f5a76 !important;
+    border: none !important;
+    margin: 10px 15px !important;
+    padding-bottom: 20px !important;
+    text-transform: inherit !important;
+}
+
+.panel{
+    box-shadow: 0 1px 1px rgb(251, 222, 218) !important;
+}
+
+.panel-heading{
+    background-color: #fffbfa !important;
+    color: #4f5a76 !important;
+    text-align: center !important;
+}
+
+.panel-heading h3{
+    font-family: RobotoSlab;
+    margin-bottom: 5px;
+    font-size: 30px;
+}
+
+.panel-warning{
+    border-color: rgb(251, 244, 240) !important;
+}
+
+.panel-warning > .panel-heading{
+    border-color: rgb(251, 244, 240) !important;
+}
+
+.form-control{
+    background-color: #fcffff !important;
+    border: 1px solid #bee0dd !important;
+    box-shadow: none !important;
+}
+
+#search_clear{
+    color: #bee0dd !important;
+}
+
+.content-wrapper{
+    margin-top: 22px !important;
+}
+
+.navbar-toggle{
+    background: rgb(141, 236, 222) !important;
+    border: none !important;
+}
+
+.navbar-toggle:hover, .navbar-toggle:focus{
+    background: #5bd2c7 !important;
+}
+
+header{
+    display: none !important;
+}
+
+.navbar-inverse{
+    background-color: #fdb9a3 !important;
+}
+
+.menu-section{
+    background: rgb(248, 172, 149) !important;
+}
+
+.panel-body-background{
+    background: rgb(251, 247, 244) !important;
+    color: #4f5a76 !important;
+
+}
+
+.panel-footer-background{
+    border: none !important;
+    background: rgb(251, 247, 244) !important;
+}
+
+.panel-footer{
+    padding: 5px 30px !important;
+    text-align: center !important;
+}
+
+.panel-body col-md-12{
+    position:relative;
+}
+
+.panel-body .btn-upload{
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 100px !important;
+    font-size: 25px !important;
+    padding: 13px 0 0 1px !important;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease 0s;
+    position: absolute;
+    top: 85%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+}
+
+footer{
+    background: rgb(253, 190, 170) !important;
+    color: #ffffff !important;
+    padding: 15px 0;
+}
+
+footer a{
+    color: #ffffff !important;
+}
+
+footer .container {
+    text-align: center;
+}
+
+#menu-top a{
+    text-align: center !important;
+    text-transform: inherit !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    transition: 0.5s;
+    border-radius: 5px;
+}
+
+.menu-section .nav > li > a:hover, .menu-section .nav > li > a:focus{
+    background-color: #5bd2c7 !important;
+    color: white !important;
+}
+
+.navbar-header{
+    max-height: 400px !important;
+    overflow: hidden !important;
+}
+
+.navbar-header img{
+    width: auto !important;
+    height: 400px !important;
+}
+
+.navbar-nav {
+    display: inline-block !important;
+    float: none !important;
+    padding-top: 7px !important;
+}
+
+.navbar-collapse {
+    text-align: center !important;
+}
+
+
+@media screen and (max-device-width: 480px) {
+
+    .navbar-header{
+	max-height: 400px !important;
+	overflow: hidden !important;
+    }
+
+    .navbar-header img{
+	width: 100% !important;
+	height: auto !important;
+    }
+    .navbar-nav{
+	padding-top: 0 !important;
+    }
+
+    #menu-top a{
+	border-bottom: 1px dotted #fff !important;
+    }
+
+    #menu-top > li:nth-child(3) > a:nth-child(1){
+	border-bottom: none !important;
+    }
+
+    .repo-link{
+	display: block;
+    }
+
+    .modal-body label{
+	text-align: center !important;
+    }
+
+    #more_books{
+    	margin: 0% !important;
+    }
+
+    .composition-container .form-group {
+	margin-left: 20px !important;
+	margin-right: 20px !important;
+    }
+
+    #poem{
+	margin: 21px 3% !important;
+    }
+
+    #content_poem p{
+	font-size: 1.4rem !important;
+    }
+
+    #poemafinal {
+	font-family: 'Cookie', cursive;
+	margin: 40px 0px !important;
+	padding: 20px !important;
+	border: none !important;
+	border-top: 3px solid #eefdff !important;
+	border-bottom: 3px solid #eefdff !important;
+	border-radius: 0 !important;
+    }
+    
+    #poemafinal .finalVerso {
+	font-size: 2.2rem !important;
+	margin: 10px 0px !important;
+    }
+
+}
+
+.repo-link{
+    font-size: 1.5rem;
+    padding: 0 20px;
+}
+
+.autor{
+    font-style: oblique;
+    color: #908f9b;
+}
+
+.modal-title{
+    font-family: RobotoSlab !important;
+    font-size: 2rem !important;
+    color: #4f5a76 !important;
+}
+
+.modal-body{
+    color: #4f5a76 !important;
+    margin: 0px 20px !important;
+}
+
+blockquote{
+    border-left: none !important;
+    font-size: 1.6rem !important;
+}
+
+.modal-footer{
+    text-align: center !important;
+    padding: 20px 0px 25px 0px !important
+}
+
+.modal-footer .btn-primary{
+    background-color: #bee0dd !important;
+    border-color: #bee0dd !important;
+    border-radius: 5px !important;
+}
+
+.modal-footer .btn-primary:hover{
+    background-color: #5bd2c7 !important;
+}
+
+.modal-footer .btn-default {
+    color: rgb(248, 172, 149) !important;
+    border-color: #f8ac95 !important;
+    border-radius: 5px !important;
+}
+
+.modal-footer .btn-default:hover {
+    color: rgb(255, 255, 255) !important;
+    background-color: #fdbeaa !important;
+    border-color: #f8ac95 !important;
+}
+
+.modal-body label{
+    width: 100% !important;
+    font-weight: normal !important;
+    text-align: left !important;
+    font-size: 1.8rem !important;
+    font-family: RobotoSlab !important;
+    padding: 5px 0 6px 0 !important;
+}
+
+.modal-body select{
+    width: 70% !important;
+    margin-left: 15% !important;
+}
+
+a{
+    color: #908f9b !important;
+}
+
+.licencia{
+    font-size: 3rem;
+    color: #908f9b;
+    text-align: center;
+    padding: 10px 0 0 0;
+}
+
+.licencia a{
+    padding: 0 3%;
+}
+
+.licenciaContainer{
+}
+
+.licenciaIcon{
+    text-align: right;
+    padding-right: 25px;
+    float: left;
+    width: 20%
+}
+
+.licenciaText{
+    float: left;
+    width: 80%;
+}
+
+#more_books{
+    margin: 0 33.3333%;
+    padding-top: 15px;
+    font-family: RobotoSlab;
+}
+
+#content_books .row{
+    animation-name: fadein;
+    animation-duration: 1s;
+}
+
+.hiddenButton{
+    display:none;
+}
+
+.upload-status{
+    color: #fdbeaa !important;
+    padding: 30px;
+}
+
+.rostro {
+  margin-top: 20px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: auto;
+}
+
+.happy {
+}
+.happy .face {
+  animation: happy 8s infinite;
+}
+.happy .mouth {
+  width: 100px;
+  height: 80px;
+  border-style: solid;
+  border-radius: 50%;
+  border-width: 8px;
+  border-color: transparent transparent #fdbeaa transparent;
+  left: 43px;
+  top: 40px;
+  position: absolute;
+}
+.happy .l-eye, .happy .r-eye {
+  top: 55px;
+}
+
+.standard {
+  background-color: #FFF5EF;
+}
+.standard .face {
+  animation: standard 5s infinite;
+}
+.standard .l-eye, .standard .r-eye {
+  top: 105px;
+  animation-delay: 1.2s;
+}
+.standard .mouth {
+  width: 75px;
+  height: 8px;
+  border-radius: 8px;
+  background-color: #fdbeaa;
+  left: 59px;
+  top: 149px;
+  position: absolute;
+}
+
+.head {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border: 4px solid #fdbeaa;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.l-eye, .r-eye {
+  width: 25px;
+  height: 25px;
+  background-color: #fdbeaa;
+  border-radius: 50%;
+  position: absolute;
+  animation: blink 5s infinite;
+}
+
+.l-eye {
+  left: 45px;
+}
+
+.r-eye {
+  right: 45px;
+}
+
+@keyframes blink {
+  0% {
+    transform: scale(1, 1);
+  }
+  10% {
+    transform: scale(1, 1);
+  }
+  12% {
+    transform: scale(1, 0.1);
+  }
+  14% {
+    transform: scale(1, 1);
+  }
+  30% {
+    transform: scale(1, 1);
+  }
+  32% {
+    transform: scale(1, 0.1);
+  }
+  34% {
+    transform: scale(1, 1);
+  }
+  60% {
+    transform: scale(1, 1);
+  }
+  62% {
+    transform: scale(1, 0.1);
+  }
+  64% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes happy {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  10% {
+    transform: translate(10px, 10px);
+  }
+  20% {
+    transform: translate(10px, 5px);
+  }
+  30% {
+    transform: translate(0px, 0px);
+  }
+  60% {
+    transform: translate(-20px, -10px);
+  }
+  70% {
+    transform: translate(-10px, -15px);
+  }
+  80% {
+    transform: translate(-10px, -15px);
+  }
+  90% {
+    transform: translate(0px, 0px);
+  }
+}
+@keyframes standard {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  10% {
+    transform: translate(-25px, 0px);
+  }
+  20% {
+    transform: translate(-25px, 0px);
+  }
+  30% {
+    transform: translate(0px, 0px);
+  }
+  60% {
+    transform: translate(0px, 0px);
+  }
+  70% {
+    transform: translate(15px, -15px);
+  }
+  80% {
+    transform: translate(15px, -15px);
+  }
+  90% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.poemInstructions{
+    text-align: center;
+    color: #d3bab2;
+    padding-bottom: 0px;
+    margin: 0px;
+}
+
+.poemLink{
+    text-align: center;
+}
+
+.poemLink a {
+    width: 200px;
+    font-size: 3rem;
+}
+
+#escribes{
+    color: #bee0dd;
+    font-size: 1.8rem;
+}
+
+#poem {
+    background-color: #fffaf7;
+    padding: 0px 0px;
+    text-align: center;
+    color: #a87b73;
+    border-radius: 5px;
+    border: 1px solid #f8e8df;
+    margin: 21px 15%;
+}
+
+#content_poem p {
+    font-size: 1.6rem;
+    animation: appear 0.5s;
+    position: relative;
+    top: 0px;
+    border-bottom: 1px solid #f8e8df;
+    margin: 0;
+    padding: 8px 8px;
+}
+
+.push{
+    animation: push 0.5s !important;
+}
+
+.userVerso{
+    color: #81bcb6 !important;
+}
+
+#verse{
+    text-align: left;
+    color: #81bcb6;
+    padding: 23px 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border: none !important;
+    padding-right: 42.5px;
+}
+
+#verse::placeholder{
+    color: #bee0dd;
+}
+
+#publishVerso {
+    margin: 5px;
+    background: transparent;
+    border: none;
+    font-size: 2.5rem;
+    color: #bee0dd;
+    pointer-events: visible !important;
+}
+
+@keyframes appear{
+    0%{opacity: 0}
+    100{opacity: 100}
+}
+
+@keyframes push{
+    0%{top: 47px}
+    100{top: 0px}
+}
+
+#newVerso{
+    position: relative;
+    top: 0px;
+    font-size: 1.8rem;
+}
+
+.smallTitle{
+    font-size: 1.9rem !important;
+}
+
+.logo-library{
+  width: 300px;
+  height: auto;
+}
+
+.center-block{
+    max-height: 300px !important;
+    max-width: 100% !important;
+    min-height: 100px !important;
+}
+
+
+/* =============================================================
+   HELPERS
+ ============================================================ */
+.to-center{
+    margin-left:auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+}
+
+#poemafinal {
+    font-family: 'Cookie', cursive;
+    margin: 40px;
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    border: 3px solid #e6eeef;
+}
+
+#poemafinal .finalVerso {
+    font-size: 3rem;
+    position: relative;
+    font-style: italic;
+    top: 0px;
+    text-align: center;
+    color: #67687e;
+    margin: 16px 0px;
+    line-height: 1.5;
+}
+
+#poemafinal .oculto{
+    opacity: 0;
+    transform: translate(0, 20px); 
+    transition: all 1s;
+}
+
+@keyframes fade-in {
+    from {opacity: 0; transform: scale(.9,.9)}
+    to {opacity: 1;}
+}
+
+#poemafinal .visible {
+    opacity: 1;
+    animation: fade-in 1.4s;
+    transform: translate(0, 0);
+}
+
+#poemafinal .separator {
+    color: #f8ac95;
+    text-align: center;
+    line-height: 0;
+    font-size: 3rem;
+}
