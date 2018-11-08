@@ -1,0 +1,24 @@
+# base de datos
+database/*.db
+local_data/
+**/__pycache__/**
+static/assets/node_modules/
+static/books/
+static/images/
+
+# entornos virtuales python
+venv/
+
+# emacs temps
+*~
+.*
+\#
+
+# python
+*.pyc.*
+
+
+# logs
+*.log.*
+
+.gitignore
