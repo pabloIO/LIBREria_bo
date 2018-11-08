@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+        <div class="jumbotron">
+                <form class="form-signin">
+                <label for="inputName" class="sr-only">Nombre:</label>
+                <input type="name" name="inputName" id="inputName" class="form-control" placeholder="Nombre" required autofocus>
+                <label for="inputEmail" class="sr-only">Correo:</label>
+                <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Correo" required autofocus>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+                
+                <button id="btnEnviar" class="btn btn-lg btn-primary btn-block" type="button">Enviar</button>
+              </form>
+              </div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js
+"></script>
+<script type="text/javascript">
+$(function(){
+	$('#btnEnviar').click(function(){
+		
+		$.ajax({
+			url: '/Enviar',
+			data: $('form').serialize(),
+			type: 'POST',
+			success: function(response){
+				console.log(response);
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+	});
+});
+</script>
+</body>
+</html>

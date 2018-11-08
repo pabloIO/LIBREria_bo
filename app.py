@@ -1,9 +1,13 @@
 from flask import Flask, render_template, Response, request, make_response, session, url_for, redirect, flash, g
 from flask_cors import CORS, cross_origin
+#para crear la contraseña en hash//...
+from werkzeug import generate_password_hash, check_password_hash
+
 from config.config import env
 from flask_sqlalchemy import SQLAlchemy
 from flaskext.mysql import MySQL
-
+###revisar xd
+'''
 app = Flask(__name__, template_folder="public")
 mysql = MySQL()
 app.config['MYSQL_HOST']= env['HOST']
@@ -17,6 +21,16 @@ app.config['UPLOAD_FOLDER'] = env['UPLOADS_DIR']
 ## DATABASE CONFIG AND INSTANTIATION
 app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
 db = SQLAlchemy(app)
+'''
+
+##Prueba...//cambiar
+app = Flask(__name__, template_folder="public")
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_DB'] = 'libre'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
 
 cors = CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
 
@@ -25,7 +39,7 @@ from controllers import libros_ctrl, poem_ctrl
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('errors/404.html'), 404
 
 #############################
 ####### VIEWS ROUTES ########
@@ -135,13 +149,40 @@ USUARIO
 
 @app.route('/registro', methods = ['GET','POST'])
 def create():
-    create_form = forms.CreateForm(request.form)
-    if request.method == 'POST' and create_form.validate():
-        user = User(username = create_form.username.data, password = create_form.password.data,email = create_form.email.data)
-        success_message = 'Usuario registrado en la base de datos'
-        flash(success_message)
-    return render_template('register.html', form = create_form)
+    return render_template('templates/register.html')
 
+
+@app.route('/Enviar',methods=['POST','GET'])
+def Enviar():
+    try:
+        _name = request.form['inputName']
+        _email = request.form['inputEmail']
+        _password = request.form['inputPassword']
+
+        # validate the received values
+        if _name and _email and _password:
+            
+            # All Good, let's call MySQL
+            
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            _hashed_password = generate_password_hash(_password)
+            cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message':'Registrado con exito'})
+            else:
+                return json.dumps({'error':str(data[0])})
+        else:
+            return json.dumps({'html':'<span>Ingrese datos validos</span>'})
+
+    except Exception as e:
+        return json.dumps({'error':str(e)})
+    finally:
+        cursor.close() 
+        conn.close()
 #############################
 #############################
 #############################
