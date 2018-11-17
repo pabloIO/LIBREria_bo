@@ -1,3 +1,5 @@
+# pruebas de machine learning
+ml-lab/
 # base de datos
 database/*.db
 local_data/
@@ -5,6 +7,10 @@ local_data/
 static/assets/node_modules/
 static/books/
 static/images/
+
+old_public/
+bower_components/
+
 
 # entornos virtuales python
 venv/

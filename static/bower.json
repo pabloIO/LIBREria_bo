@@ -1,0 +1,31 @@
+{
+  "name": "LIBREria_bo",
+  "homepage": "https://github.com/pabloIO/LIBREria_bo",
+  "authors": [
+    "Pablo Jordan"
+  ],
+  "description": "open library with digital content",
+  "main": "",
+  "keywords": [
+    "bootstrap",
+    "js",
+    "python",
+    "library",
+    "digital",
+    "content",
+    "data",
+    "analytics"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jqcloud2": "^2.0.3"
+  }
+}

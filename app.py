@@ -1,11 +1,7 @@
 from flask import Flask, render_template, Response, request, make_response, session, url_for, redirect, flash, g
 from flask_cors import CORS, cross_origin
-#para crear la contraseña en hash//...
-from werkzeug import generate_password_hash, check_password_hash
-
 from config.config import env
 from flask_sqlalchemy import SQLAlchemy
-from flaskext.mysql import MySQL
 ###revisar xd
 '''
 app = Flask(__name__, template_folder="public")
@@ -16,30 +12,35 @@ app.config['MYSQL_PASSWORD'] = env['SQL_CONF']['PASSWORD']
 app.config['MYSQL_DB'] = env['SQL_CONF']['DB_NAME']
 mysql.init_app(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['SECRET_KEY'] = env['APP_SECRET']
 app.config['UPLOAD_FOLDER'] = env['UPLOADS_DIR']
 ## DATABASE CONFIG AND INSTANTIATION
 app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
 db = SQLAlchemy(app)
 '''
 
-##Prueba...//cambiar
 app = Flask(__name__, template_folder="public")
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'libre'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = env['APP_SECRET']
+# cors = CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
 
-cors = CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
+db = SQLAlchemy(app)
 
-from controllers import libros_ctrl, poem_ctrl
-
+@app.before_first_request
+def create_tables():
+    print('hey')
+    print('hey')
+    print('hey')
+    print('hey')
+    print('hey')
+    db.create_all()
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404
+
+from models import tables
+from controllers import libros_ctrl, poem_ctrl, login_ctrl
 
 #############################
 ####### VIEWS ROUTES ########
@@ -62,7 +63,6 @@ def cookie():
     resp = make_response( render_template('cookie.html') )
     resp.set_cookie('custome_cookie', 'Owo')
     return resp
-
 
 @app.route("/nosotros")
 def about():
@@ -151,19 +151,15 @@ USUARIO
 def create():
     return render_template('templates/register.html')
 
-
 @app.route('/Enviar',methods=['POST','GET'])
 def Enviar():
     try:
         _name = request.form['inputName']
         _email = request.form['inputEmail']
         _password = request.form['inputPassword']
-
         # validate the received values
         if _name and _email and _password:
-            
             # All Good, let's call MySQL
-            
             conn = mysql.connect()
             cursor = conn.cursor()
             _hashed_password = generate_password_hash(_password)
@@ -183,6 +179,7 @@ def Enviar():
     finally:
         cursor.close() 
         conn.close()
+
 #############################
 #############################
 #############################
@@ -191,11 +188,12 @@ def Enviar():
 # def chat_room():
 #     return render_template('chatRoom.html')
 #
-# @app.route("/login", methods=['POST'])
-# @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
-# def login():
-#     return login_ctrl.LoginCtrl.login(db, request.form, Response)
-#
+@app.route("/login", methods=['POST'])
+@cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
+def login():
+    return login_ctrl.LoginCtrl.login(db, request.form, Response)
+
+
 # @app.route('/user/<user_id>/conversation')
 # def show_user_conversation(user_id):
 #     return chat_ctrl.ChatCtrl.getConversation(user_id, db, Response)

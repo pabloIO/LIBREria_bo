@@ -2,7 +2,7 @@ import string, random, json, sys, os.path, uuid
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 # from models import sesion
-import models.models as database
+# import models.models as database
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.functions import func
 import uuid

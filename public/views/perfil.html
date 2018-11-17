@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <meta lang="es">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="LIBREria" />
+    <title>Perfil</title>
+    <link rel="shortcut icon" href="../static/icon/icon.ico">
+    <link href="{{ url_for('static', filename = 'assets/css/bootstrap.css') }} " rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/style.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-12">
+        
+        <section class="menu-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                                <ul id="menu-top" class="nav navbar-nav navbar-right">
+                                    <li><a class="link-menu" href="/">Biblioteca</a></li>
+                                    <li><a class="link-menu" href="/poema">Poema</a></li>
+                                    <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
+                                    <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <h1 class="page-header">Perfil de usuario
+                <small> </small>
+            </h1>
+    </div>
+</div>
+<!--Fin-->
+<div class="row">
+    <div class="col-md-3">
+        <div class="col-md-12">
+            <img src="{{ url_for('static', filename = 'assets/img/LaLIBREria.jpg')}}" class="img-responsive img-portfolio img-hover">
+        </div>
+        <div class="col-md-12">
+            <p class="text-center"><strong>Nombre y apellido</strong></p>
+            <p class="text-center"><em>Nombre de usuario</em></p>
+        </div>
+        <!--
+        <div class="col-md-12 text-center">
+            <ul class="list-unstyled list-inline list-social-icon">
+                <li>
+                    <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
+                </li>
+            </ul>
+        </div>
+        -->
+        <div class="col-md-12">
+            <br>
+            <ul class="list-group list-primary">
+                <a href="#" class="list-group-item">Mi perfil</a>
+                <a href="#" class="list-group-item">Favoritos</a>
+                <a href="#" class="list-group-item">Mis libros</a>
+                <a href="#" class="list-group-item">Seguidores</a>
+                <a href="#" class="list-group-item">Siguiento</a>
+                <a href="" class="list-group-item">Configuración</a>
+            </ul>
+        </div>
+    </div>
+    <!--FIN-->
+    <div class="col-md-9">
+        <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+            <h3 style="text-align: center">Mi Perfil<p><small>Añadir información para compartir tu perfil</small></p></h3>
+        </div>
+        <form novalidate>
+            <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <br>
+                                <div class="form-group">
+                                    <label for="autor">Nombre</label>
+                                    <input type="text" class="form-control" aria-describedby="autorhelp" placeholder="Autor" required>
+                                </div>
+                                <div class="form-group">
+                                        <label for="autor">Apellido</label>
+                                        <input type="text" class="form-control" aria-describedby="autorhelp" placeholder="Autor" required>
+                                </div>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary">Editar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+</body>
+</html>

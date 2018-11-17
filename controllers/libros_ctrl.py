@@ -2,14 +2,17 @@ import string, random, json, sys, os.path, uuid
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 # from models import sesion
-import models.models as database
+# import models.models as database
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.functions import func
 from sqlalchemy import desc
 import uuid
 from config.config import env
 from werkzeug.utils import secure_filename
-from flask import flash, redirect, url_for, jsonify
+from flask import flash, redirect, url_for, jsonify, render_template
+from ml_algos import PdfHandler
+from models import tables
+
 ## Chequear que solo existe una extension
 def allowed_file(file, type):
     if type == 'img' and file == None:
@@ -32,8 +35,8 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            total = database.Libro.query.filter(database.Libro.activo == 1)
-            books = database.Libro.query.filter(database.Libro.activo == 1).order_by(desc(database.Libro.id)).paginate(page=int(page_num), per_page=24).items
+            total = Libro.query.filter(Libro.activo == 1)
+            books = Libro.query.filter(Libro.activo == 1).order_by(desc(Libro.id)).paginate(page=int(page_num), per_page=24).items
             print(books)
             if books == None:
                 res['books'] = []
@@ -62,7 +65,7 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            book = database.Libro.query.get(book_id)
+            book = Libro.query.get(book_id)
             res['success'] = True
             res['book'] = book
         except Exception as e:
@@ -79,10 +82,10 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            books = database.Libro.query.filter(
-                    database.Libro.autor.like('%{}%'.format(query_p)) |
-                    database.Libro.nombre_libro.like('%{}%'.format(query_p)),
-                    database.Libro.activo == 1
+            books = Libro.query.filter(
+                        Libro.autor.like('%{}%'.format(query_p)) |
+                        Libro.nombre_libro.like('%{}%'.format(query_p)),
+                        Libro.activo == 1
                     ).all()
             if books == None:
                 res['books'] = []
@@ -111,7 +114,7 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            book = database.Libro.query.get(request.form['id'])
+            book = Libro.query.get(request.form['id'])
             book.denuncia_derechos = request.form['desc']
             book.activo = False
             db.session.commit()
@@ -147,7 +150,7 @@ class LibrosCtrl(object):
                     imgfilename = uuid.uuid4().hex + secure_filename(imgfile.filename) if imgfile else None
                     print(imgfilename)
                     print(bookfilename)
-                    newBook = database.Libro(
+                    newBook = Libro(
                         nombre_libro=request.form['book'],
                         genero=request.form['genre'],
                         autor=request.form['author'],
@@ -157,6 +160,8 @@ class LibrosCtrl(object):
                         imagen=imgfilename,
                     )
                     bookfile.save(os.path.join(env['UPLOADS_DIR'] + '/books', bookfilename))
+                    pdfHandler = PdfHandler(request.form['language'])
+                    word_cloud = pdfHandler.get_word_cloud(0.15)
                     if imgfilename != None: imgfile.save(os.path.join(env['UPLOADS_DIR'] + '/images', imgfilename))
                     db.session.add(newBook)
                     db.session.commit()

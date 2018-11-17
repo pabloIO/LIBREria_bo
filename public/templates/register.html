@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-        <div class="jumbotron">
+  <head>
+  </head>
+  <body>
+      <!--cambiar-->
+        <div>
                 <form class="form-signin">
-                <label for="inputName" class="sr-only">Nombre:</label>
-                <input type="name" name="inputName" id="inputName" class="form-control" placeholder="Nombre" required autofocus>
-                <label for="inputEmail" class="sr-only">Correo:</label>
-                <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Correo" required autofocus>
-                <label for="inputPassword" class="sr-only">Password</label>
-                <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+                <label for="inputName" class="sr-only">Nombre: </label>
+                <input type="name" name="inputName" id="inputName" placeholder="Nombre" required autofocus>
+                <label for="inputUsername" class="sr-only">Nombre de usuario</label>
+                <input type="username" name="inputUsername" id="inputUsername" placeholder="Nombre de usuario">
+                <label for="inputEmail" class="sr-only">Correo: </label>
+                <input type="email" name="inputEmail" id="inputEmail" placeholder="Correo" required autofocus>
+                <label for="inputPassword" class="sr-only">Contraseña:  </label>
+                <input type="password" name="inputPassword" id="inputPassword" placeholder="Contraseña" required>
                 
                 <button id="btnEnviar" class="btn btn-lg btn-primary btn-block" type="button">Enviar</button>
               </form>
               </div>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js
-"></script>
-<script type="text/javascript">
-$(function(){
+ <!--{{ url_for('static', filename = 'assets/js/bootstrap.js')}}-->
+ <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!--llevar a carpeta js-->
+ <script type="text/javascript">
+    $(function(){
 	$('#btnEnviar').click(function(){
 		
 		$.ajax({
@@ -38,6 +38,7 @@ $(function(){
 		});
 	});
 });
-</script>
-</body>
+ </script>
+    </div>
+  </body>
 </html>
