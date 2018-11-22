@@ -1,7 +1,9 @@
-from flask import Flask, render_template, Response, request, make_response, session, url_for, redirect, flash, g
+from flask import Flask, render_template, Response, request, make_response, session, url_for, redirect, flash, g, jsonify
 from flask_cors import CORS, cross_origin
 from config.config import env
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager, jwt_required , get_jwt_identity, unset_jwt_cookies
+
 ###revisar xd
 '''
 app = Flask(__name__, template_folder="public")
@@ -18,29 +20,31 @@ app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
 db = SQLAlchemy(app)
 '''
 
-app = Flask(__name__, template_folder="public")
+app = Flask(__name__, template_folder="public", static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = env['APP_SECRET']
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/user'
+app.config['JWT_SECRET_KEY'] = env['APP_SECRET'] 
+# app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
 # cors = CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
 
 db = SQLAlchemy(app)
+jwt = JWTManager(app)
+
+from models import tables
+from controllers import libros_ctrl, poem_ctrl, login_ctrl, users_ctrl
+from middleware.json_middleware import json_required
 
 @app.before_first_request
 def create_tables():
-    print('hey')
-    print('hey')
-    print('hey')
-    print('hey')
-    print('hey')
+    print('create tables')
     db.create_all()
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404
-
-from models import tables
-from controllers import libros_ctrl, poem_ctrl, login_ctrl
 
 #############################
 ####### VIEWS ROUTES ########
@@ -52,11 +56,46 @@ def main():
 '''
 AUTHENTICATION
 '''
-@app.route('/logout')
+@app.route(env['API_VERSION'] + "/login", methods=['POST'])
+@json_required
+# @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
+def authenticate():
+    return login_ctrl.LoginCtrl.login()
+
+@app.route(env['API_VERSION'] + "/sign_in", methods=['POST'])
+@json_required
+# @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
+def sign_in():
+    return login_ctrl.LoginCtrl.register()
+
+@app.route("/login", methods=['GET'])
+# @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
+def login():
+    return render_template('login.html')
+
+@app.route('/registro', methods = ['GET'])
+def register():
+    return render_template('register.html')
+
+@app.route(env['API_VERSION'] + '/user/logout', methods=['POST'])
 def logout():
-    if 'username' in session:
-        session.pop('username')
-    return redirect(url_for('login'))
+    resp = jsonify({'logout': True})
+    print('logouuuuut!')
+    unset_jwt_cookies(resp)
+    return resp, 200
+'''
+USER
+'''
+@app.route('/user/dashboard', methods = ['GET'])
+@jwt_required
+def dashboard():
+    return render_template('user_dashboard.html')
+
+@app.route('/user/perfil', methods = ['GET'])
+@jwt_required
+def profile():
+    return render_template('views/perfil.html')
+
 
 @app.route('/cookie')
 def cookie():
@@ -84,9 +123,9 @@ def licencias():
 def bibliotecas():
     return render_template('bibliotecas.html')
 
-
 ## CREAR ESTAS DOS PAGINAS
-@app.route("/libro-exito")
+@app.route("/user/libro-exito")
+@jwt_required
 def upload_success():
     return render_template('libro-exito.html')
 
@@ -98,6 +137,19 @@ def upload_fail():
 @app.route("/verso-exito")
 def upload_poem_success():
     return render_template('universe.html')
+
+@app.route("/user/libro/<book_id>", methods=['GET'])
+def get_book(book_id):
+    return render_template('ver-libro.html')
+
+@app.route("/user/autor/my-books", methods=['GET'])
+def get_my_books():
+    return render_template('views/mis-libros.html')
+
+@app.route("/user/autor/my-books/<book_id>", methods=['GET'])
+def get_my_book_stats(book_id):
+    return render_template('views/estadisticas-libro.html')
+
 #############################
 #############################
 #############################
@@ -106,8 +158,9 @@ def upload_poem_success():
 ####### BOOKS ROUTES ########
 #############################
 @app.route(env['API_VERSION'] + "/libros/page/<page_num>", methods=['GET'])
+# @jwt_required
 def books(page_num):
-    return libros_ctrl.LibrosCtrl.all(page_num, db, Response)
+    return libros_ctrl.LibrosCtrl.all(page_num)
 
 @app.route(env['API_VERSION'] + "/libros/search/<criteria>", methods=['GET'])
 def books_search(criteria):
@@ -115,15 +168,33 @@ def books_search(criteria):
 
 @app.route(env['API_VERSION'] + "/libros/<book_id>", methods=['GET'])
 def book(book_id):
-    return libros_ctrl.LibrosCtrl.getBook(book_id, db, Response)
+    return libros_ctrl.LibrosCtrl.getBook(book_id)
 
 @app.route(env['API_VERSION'] + "/libro/upload", methods=['POST', 'GET'])
+# @jwt_required
 def upload_book():
     return libros_ctrl.LibrosCtrl.uploadBook(db, request, Response)
+
+@app.route(env['API_VERSION'] + "/libro/download/<book_id>", methods=['GET'])
+# @jwt_required
+def download_book(book_id):
+    return libros_ctrl.LibrosCtrl.downloadBook(book_id)
 
 @app.route(env['API_VERSION'] + "/libro/denounce", methods=['POST', 'GET'])
 def denounce_book():
     return libros_ctrl.LibrosCtrl.denounceBook(db, request, Response)
+
+@app.route(env['API_VERSION'] + "/profile/<user_id>", methods=['GET'])
+def get_user_data(user_id):
+    return users_ctrl.UserCtrl.getUser(user_id)
+
+@app.route(env['API_VERSION'] + "/profile/books/<autor_id>", methods=['GET'])
+def get_autor_books(autor_id):
+    return users_ctrl.UserCtrl.getBooks(autor_id)
+
+@app.route(env['API_VERSION'] + "/profile/books/info/<book_id>", methods=['GET'])
+def get_book_stats(book_id):
+    return libros_ctrl.LibrosCtrl.getBookStatistics(book_id)
 
 #############################
 #############################
@@ -142,14 +213,6 @@ def poema_lineas():
 @app.route(env['API_VERSION'] + "/poems/upload/<verso>", methods=['POST'])
 def upload_poem(verso):
     return poem_ctrl.PoemCtrl.uploadPoem(db, request, verso, Response)
-
-'''
-USUARIO
-'''
-
-@app.route('/registro', methods = ['GET','POST'])
-def create():
-    return render_template('templates/register.html')
 
 @app.route('/Enviar',methods=['POST','GET'])
 def Enviar():
@@ -188,10 +251,6 @@ def Enviar():
 # def chat_room():
 #     return render_template('chatRoom.html')
 #
-@app.route("/login", methods=['POST'])
-@cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
-def login():
-    return login_ctrl.LoginCtrl.login(db, request.form, Response)
 
 
 # @app.route('/user/<user_id>/conversation')
@@ -204,4 +263,4 @@ def login():
 
 if __name__ == '__main__':
     print(str.format('CONECTADO EN PUERTO {0}', env['PORT']))
-    app.run(host=env['HOST'], port=env['PORT'], debug=True, threaded=True)
+    app.run(host=env['HOST'], port=env['PORT'], debug=True)

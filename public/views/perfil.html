@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-
-  <head>
-    <meta lang="es">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="LIBREria" />
-    <title>Perfil</title>
-    <link rel="shortcut icon" href="../static/icon/icon.ico">
-    <link href="{{ url_for('static', filename = 'assets/css/bootstrap.css') }} " rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/style.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
-</head>
-<body>
-
-<div class="row">
+{% extends "Base/base-profile.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block content %}
+<!-- <div class="row">
     <div class="col-md-12">
         
         <section class="menu-section">
@@ -37,16 +22,16 @@
                 <small> </small>
             </h1>
     </div>
-</div>
+</div> -->
 <!--Fin-->
 <div class="row">
     <div class="col-md-3">
         <div class="col-md-12">
-            <img src="{{ url_for('static', filename = 'assets/img/LaLIBREria.jpg')}}" class="img-responsive img-portfolio img-hover">
+            <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
         </div>
         <div class="col-md-12">
-            <p class="text-center"><strong>Nombre y apellido</strong></p>
-            <p class="text-center"><em>Nombre de usuario</em></p>
+            <p id="name"><strong></strong></p>
+            <a  id="username"><em></em></a>
         </div>
         <!--
         <div class="col-md-12 text-center">
@@ -66,11 +51,10 @@
         <div class="col-md-12">
             <br>
             <ul class="list-group list-primary">
-                <a href="#" class="list-group-item">Mi perfil</a>
                 <a href="#" class="list-group-item">Favoritos</a>
-                <a href="#" class="list-group-item">Mis libros</a>
+                <a href="/user/autor/my-books" class="list-group-item">Mis libros</a>
                 <a href="#" class="list-group-item">Seguidores</a>
-                <a href="#" class="list-group-item">Siguiento</a>
+                <a href="#" class="list-group-item">Siguiendo</a>
                 <a href="" class="list-group-item">Configuración</a>
             </ul>
         </div>
@@ -110,5 +94,10 @@
     </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
+<script >
+    User.getUserData()
+</script>
+{% endblock %}

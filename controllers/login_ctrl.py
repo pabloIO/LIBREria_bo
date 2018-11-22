@@ -7,59 +7,98 @@ sys.path.append(
 # import models.models as database
 from sqlalchemy.exc import IntegrityError
 import uuid
+from app import db
+from flask import Response, request, jsonify, render_template, make_response
 from config.config import env
+from models import tables
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity, set_access_cookies
+)
 
 class LoginCtrl(object):
     @staticmethod
-    def login(db, request, response):
+    def login():
         try:
             res = {
                 'success': False,
             }
-            exists = database.Usuarios.query.filter_by(
-                nombre_usuario=request['username']
-            ).first()
-            if exists:
-                newSession = database.Sesion(
-                    usuarios_id=exists.id
-                )
-                db.session.add(newSession)
-                db.session.commit()
-                res['success'] = True
-                res['id'] = exists.id
-                res['username'] = exists.nombre_usuario
-                res['token'] = uuid.uuid4().hex,
-                res['sesion'] = newSession.id,
-                res['socket_channel'] = exists.canal_socket,
-                res['_conversation_id'] = exists._conversation_id
-                res['url_to'] = str.format('{0}:{1}/chat_room',  'http://localhost', env['PORT'])
+            req = request.get_json()
+            user = tables.Usuario.exists(req['username']) 
+            if user:
+                if not tables.Usuario.check_password(req['password'], user.us_password):
+                    res['msg'] = 'Credenciales incorrectos'
+                    res['code'] = 200
+                else:
+                    # print(user.autor[0].ai_id)
+                    access_token = create_access_token(identity=req['username'])
+                    res['msg'] = 'Exito'
+                    res['success'] = True
+                    res['code'] = 200
+                    res['user'] = {
+                        'id': user.us_id,
+                        'email': user.us_correo,
+                        'name': user.complete_name(),
+                        'image': user.us_foto_perfil,
+                        'socket': user.us_canal_socket,
+                        'rol': user.rol_id,
+                        'token': access_token,
+                        'autor_id': user.autor[0].ai_id,
+                    }
+                    resp = jsonify(res)
+                    set_access_cookies(resp, access_token)
+                    
             else:
-                if not request['username']:
-                    res['msg'] = 'Debes introducir el nombre de usuario'
-                    return response(json.dumps(res), mimetype='application/json')
-                newUser = database.Usuarios(
-                    nombre_usuario=request['username'],
-                    canal_socket=uuid.uuid4().hex,
-                    _conversation_id=str(mongo.create_conversation())
-                )
-                db.session.add(newUser)
-                db.session.commit()
-                newSession = database.Sesion(
-                    usuarios_id=newUser.id
-                )
-                db.session.add(newSession)
-                db.session.commit()
-                res['success'] = True
-                res['id'] = newUser.id
-                res['sesion'] = newSession.id,
-                res['username'] = newUser.nombre_usuario
-                res['token'] = uuid.uuid4().hex
-                res['socket_channel'] = newUser.canal_socket,
-                res['_conversation_id'] = newUser._conversation_id
-                res['url_to'] = str.format('{0}:{1}/chat_room', 'http://localhost', env['PORT'])
-        except IntegrityError as e:
+                res['code'] = 200
+                res['msg'] = 'El usuario no existe, verifique sus datos'
+                resp = jsonify(res)
+            return resp, 200
+        except Exception as e:
             print(e)
-            db.session.rollback()
-            res['msg'] = 'Nombre de usuario existente'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
+            res['msg'] = 'Hubo un error en la petición, intente nuevamente'
+            res['code'] = 500
+            return jsonify(res)
+    @staticmethod
+    def register():
+        try:
+            res = {'success': False}
+            req = request.get_json()
+            if not tables.Usuario.exists(req['email']) :
+                user = tables.Usuario(
+                    us_nombre_usuario=req['username'],
+                    us_nombre=req['name'],
+                    us_apellidos=req['lastname'],
+                    us_correo=req['email'],
+                    us_password=tables.Usuario.hash_password(req['password']),
+                    rol_id=1,
+                )
+                autor = tables.AutorIndie()
+                user.autor.append(autor)
+                # print(user)
+                # return
+                tables.Usuario.save(user)
+                # print(created)
+
+                res['success'] = True
+                res['msg'] = 'Se creo un usuario con exito'
+                access_token = create_access_token(identity=req['username'])
+                res['code'] = 200
+                res['user'] = {
+                    'id': user.us_id,
+                    'email': user.us_correo,
+                    'name': user.complete_name(),
+                    'image': user.us_foto_perfil,
+                    'socket': user.us_canal_socket,
+                    'rol': user.rol_id,
+                    'token': access_token,
+                }
+                set_access_cookies(jsonify(res), access_token)
+
+            else:
+                res['msg'] = 'Usuario existente'
+            return jsonify(res)
+        except Exception as e:
+            print(e)
+            res['msg'] = 'Hubo un error al registrarse, inténtelo de nuevo'
+            res['code'] = 500
+            return jsonify(res)

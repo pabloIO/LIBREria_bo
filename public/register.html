@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Registro</title>
-    <link href="{{ url_for('static', filename = 'assets/css/bootstrap.css') }} " rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/style.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
-</head>
-<body>
+{% extends "Base/base.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block js %}
+{% endblock %}
+{% block content %}
             <div class="modal-dialog">
             <div class="modal-content">
                         <div class="modal-header">
@@ -21,24 +13,24 @@
                           <div class="modal-body">
                               <div class="form-group">
                                 <label for="NombreUsuario">Nombre de Usuario</label>
-                                <input type="text" class="form-control" placeholder="Nombre de usuario" required>
+                                <input type="text" class="form-control" id="username" placeholder="Nombre de usuario" required>
                               </div>
                                 <div class="form-group">
                                     <label for="NombreUsuario">Nombre</label>
-                                    <input type="text" class="form-control" placeholder="Nombre" required>
+                                    <input type="text" class="form-control" id="name" placeholder="Nombre" required>
                                 </div>
                                 <div class="form-group">
-                                        <label for="NombreUsuario">Apellido</label>
-                                        <input type="text" class="form-control" placeholder="Apellidos" required>
-                                      </div>
-                                      <div class="form-group">
-                                            <label for="NombreUsuario">Correo</label>
-                                            <input type="text" class="form-control" placeholder="ejemplo@gmail.com" required>
-                                          </div>
-                                          <div class="form-group">
-                                                <label for="NombreUsuario">Contraseña</label>
-                                                <input type="password" class="form-control" required>
-                                              </div>
+                                  <label for="NombreUsuario">Apellido</label>
+                                  <input type="text" class="form-control" id="lastname" placeholder="Apellidos" required>
+                                </div>
+                                <div class="form-group">
+                                  <label for="NombreUsuario">Correo electrónico</label>
+                                  <input type="text" class="form-control" id="email" placeholder="ejemplo@gmail.com" required>
+                                </div>
+                                <div class="form-group">
+                                  <label for="NombreUsuario">Contraseña</label>
+                                  <input type="password" class="form-control" id="password" required>
+                                </div>
                               <div class="form-group">
                                 <label for="password">Repetir contraseña</label>
                                 <input type="password" class="form-control">
@@ -46,10 +38,12 @@
                           </div>
                           <div class="modal-footer">
                                 <a href="/"><button type="button" class="btn btn-default">Volver</button></a>
-                                <a href="/"><button type="button" class="btn btn-primary">Enviar</button></a>
+                                <button type="button"  class="btn btn-primary" onclick="Auth.signIn()">Registrarme</button>
                           </div>
                         </form>
                     </div>
                 </div>
-</body>
-</html>
+<script src="{{ url_for('static', filename = 'assets/js/LocalStorage.js')}}"></script>
+<script src="{{ url_for('static', filename = 'assets/js/Auth.js')}}"></script>
+
+{% endblock %}

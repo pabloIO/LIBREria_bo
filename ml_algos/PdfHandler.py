@@ -8,7 +8,7 @@ from .tf_idf import TfIdfAnalyzer
 
 class PdfHandler(TfIdfAnalyzer):
     def __init__(self, language, pdf):
-        super.__init__(self, language)
+        super().__init__(language)
         self.pdf_file =  pdf
 
     def read_pdf_text_data(self):

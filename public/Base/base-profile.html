@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta lang="es">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="LIBREria" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="shortcut icon" href="../static/icon/icon.ico">
+    <link href="{{ url_for('static', filename = 'assets/css/bootstrap.css') }} " rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/style.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.min.css')}} ">
+</head>
+
+<body>
+    <div class="navbar navbar-inverse set-radius-zero">
+        <div class="container center-block">
+            <div class="navbar-header">
+                <div class="col-md-12">
+                    <button type="button" class="main-menu-toggle navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="menu-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="navbar-collapse collapse ">
+                        <ul id="menu-top" class="nav navbar-nav navbar-right">
+                            <li><a class="link-menu" href="/">Biblioteca</a></li>
+                            <li><a class="link-menu" href="/poema">Poema</a></li>
+                            <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
+                            <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
+                            <!--Usuario-->
+                            <li><a href="#" class="link-menu" data-toggle="modal" data-target="#myModal">Sube un libro</a></li>
+                            <li><a href="/user/perfil" class="link-menu">Perfil</a></li>
+                            <!--Usuario-->
+                            <li><a href="#" onclick="Auth.logout()" class="link-menu">Cerrar sesión</a></li>
+                            <li><a href="#" class="link-menu">Ayuda</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% block content %}{% endblock %}
+<!--Modal subir libro-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Sube un libro</h4>
+                </div>
+                <form class="" id="uploadBook" enctype="multipart/form-data">
+                  <div class="modal-body">
+                      <blockquote >
+                        <i>La LIBREría tiene como objetivo difundir material bibliógrafico propios del dominio público, ayúdanos a difundir.</i>
+                      </blockquote>
+                      <div class="form-group">
+                        <label for="autor">Autor</label>
+                        <input type="text" class="form-control" id="autor" name="author" aria-describedby="autorhelp" placeholder="Autor" readonly>
+                      </div>
+                      <div class="form-group">
+                        <label for="libro">Título</label>
+                        <input type="text" class="form-control" id="libro" name="book" aria-describedby="librohelp" placeholder="Libro" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="genero">Genero (opcional)</label>
+                        <input type="text" class="form-control" id="genero" name="genre" aria-describedby="generohelp" placeholder="Género">
+                      </div>
+                      <div class="form-group">
+                        <label for="idioma">Idioma</label>
+                        <input type="text" class="form-control" id="idioma" name="language" aria-describedby="idiomahelp" placeholder="Idioma">
+                      </div>
+                      <div class="form-group">
+                        <label for="lice">Licencia</label>
+                        <select class="" name="licence" id="lice">
+                          <option value="Dominio público">Dominio público</option>
+                          <option value="Creative Commons">Creative Commons</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="filebook">Escrito digital</label>
+                        <input type="file" class="form-control" id="filebook" name="filebook" aria-describedby="filehelp" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="imagen">Imagen (opcional)</label>
+                        <input type="file" class="form-control" id="imagen" name="fileimg" aria-describedby="imagehelp">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <div class="alert alert-success" id="loading">
+                        <strong>Su libro esta siendo subido, espere porfavor</strong>
+                      </div>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                      <button type="button" class="btn btn-primary" onclick="uploadBook()">Subir</button>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <footer>
+        <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+                  <a href="https://github.com/pabloIO/LIBREria_bo" class="repo-link"><i class="fab fa-github"></i>  Contribuye código</a>
+                <a href="https://twitter.com/LIBREria_bo" class="repo-link"><i class="fab fa-twitter"></i>  Síguenos</a>
+		  <p>
+		    <div>
+		      <strong>Con apoyo de</strong>
+		    </div>
+		    <a href="https://lapaz.laotrared.net" target="_blank"><img src="{{ url_for('static', filename = 'assets/img/laotrared_header.png')}}"></a>
+		  </p>       
+              </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename = 'bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.js')}} "></script>
+    <script src="{{ url_for('static', filename = 'bower_components/chart.js/dist/Chart.min.js')}} "></script>
+    <script src="{{ url_for('static', filename = 'assets/js/bootstrap.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Config.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/LocalStorage.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Auth.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/LIBREria.js')}}"></script>
+    {% block js %}{% endblock %}
+
+</body>
+</html>

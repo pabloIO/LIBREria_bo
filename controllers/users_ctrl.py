@@ -28,74 +28,32 @@ def get_count(q):
     count = q.session.execute(count_q).scalar()
     return count
 
-class LibrosCtrl(object):
+class UserCtrl(object):
     @staticmethod
-    def all(page_num):
+    def getBooks(autor_id):
         try:
             res = {
                 'success': False,
             }
-            print('hey')
-            total = tables.Libro.query.filter(tables.Libro.li_activo == 1)
-            print('heyhoy')
-            books = tables.Libro.activeBooks(page_num)
-            print('heyhoy')
-            print(books)
-            if books == None:
-                res['books'] = []
-            else:
-                # print(books.comentarios)
-                serialized = [ { 'id': i.li_id,
-                                'name': i.li_titulo,
-                                'file': i.li_archivo,
-                                # 'author': i.autor.complete_name(),
-                                # 'likes': i.likes,
-                                'licencia': i.li_licencia,
-                                'image': i.li_imagen } for i in books ]
-                res['books'] = serialized
-            res['success'] = True
-            res['total'] = get_count(total)
-        except Exception as e:
-            print(e)
-            # db.session.rollback()
-            res['msg'] = 'Hubo un error al obtener los tables.Libros, inténtelo nuevamente'
-        finally:
-            resp = jsonify(res)
-            return resp, 200
-            
-    @staticmethod
-    def getBook(book_id):
-        try:
-            res = {
-                'success': False,
-            }
-            book = tables.Libro.exists(book_id)
-            if not book:
+            autor = tables.AutorIndie.exists(autor_id)
+            if not autor:
                 return render_template('errors/404.html'), 404
             # book = tables.Libro.get_book(book_id)
-            book.update_num_views()
-            book_body = {
-                'id': book.li_id,
-                'keywords': [
-                    {
-                        'text': word.pc_palabra,
-                        'weight': word.pc_ocurrencia
-                    } for word in book.palabras_clave
-                ],
-                'title': book.li_titulo,
-                'image': book.li_imagen,
-                'downloads': book.li_num_descargas,
-                'file': book.li_archivo,
-                'language': book.li_idioma,
-                'genre': [
-                    {
-                        'id': word.ge_id,
-                        'desc': word.ge_descripcion,
-                    } for word in book.generos
-                ],
+            books_body = {
+                'books': [ 
+                    { 'id': i.li_id,
+                    'name': i.li_titulo,
+                    'file': i.li_archivo,
+                    # 'author': i.autor.complete_name(),
+                    # 'likes': i.likes,
+                    'downloads': i.li_num_descargas,
+                    'views': i.li_numero_vistas,
+                    'licencia': i.li_licencia,
+                    'image': i.li_imagen } for i in autor.publicacion 
+                ]
             }
             res['success'] = True
-            res['book'] = book_body
+            res['book'] = books_body
             resp = jsonify(res)
             return resp, 200
         except Exception as e:
@@ -104,40 +62,30 @@ class LibrosCtrl(object):
             res['msg'] = 'Hubo un error al cargar el Libro, inténtelo nuevamente'
             resp = jsonify(res)
             return resp, 500
-
+            
     @staticmethod
-    def getBookStatistics(book_id):
+    def getUser(user_id):
         try:
             res = {
                 'success': False,
             }
-            book = tables.Libro.exists(book_id)
-            if not book:
-                return render_template('errors/404.html'), 404
+            user = tables.Usuario.exists_with_id(user_id)
+            # if not user:
+            #     return render_template('errors/404.html'), 404
             # book = tables.Libro.get_book(book_id)
-            book_body = {
-                'id': book.li_id,
-                'keywords': [
-                    {
-                        'text': word.pc_palabra,
-                        'weight': word.pc_ocurrencia
-                    } for word in book.palabras_clave
-                ],
-                'title': book.li_titulo,
-                'image': book.li_imagen,
-                'downloads': book.li_num_descargas,
-                'views': book.li_numero_vistas,
-                'file': book.li_archivo,
-                'language': book.li_idioma,
-                'genre': [
-                    {
-                        'id': word.ge_id,
-                        'desc': word.ge_descripcion,
-                    } for word in book.generos
-                ],
+            user_body = {
+                'id': user.us_id,
+                'autor': {
+                    'id': user.autor[0].ai_id,
+                    'bio': user.autor[0].ai_biografia,
+                    'publications':  user.autor[0].ai_cantidad_publicaciones
+                },
+                'name': user.complete_name(),
+                'image': user.us_foto_perfil,
+                'username': user.us_nombre_usuario,
             }
             res['success'] = True
-            res['book'] = book_body
+            res['user'] = user_body
             resp = jsonify(res)
             return resp, 200
         except Exception as e:

@@ -1,20 +1,77 @@
 'use strict';
-const API = 'http://' + window.location.host + '/api/v1';
-const ROOT = 'http://' + window.location.host;
+// var LIBREria = (function(){
+
+// }());
+
 let page = 1;
 var book_id = null;
+document.getElementById('autor').setAttribute('value', LocalStorage.getKey('name'));
 
 const getBooks = function(page){
   $.ajax({
     method: 'GET',
-    url: `${API}/libros/page/${page}`
+    url: `${Config.PUBLIC_URL}/libros/page/${page}`,
+    headers: {
+      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+    },
   }).done(function(res){
     if(res.success){
       addBookDom(res.books);
-      if (res.books.length < 24){	document.getElementById('nextPage').classList.add('hiddenButton');
-      }
+      if (res.books.length < 24) document.getElementById('nextPage').classList.add('hiddenButton');
     }else{
       alert('Hubo un problema al cargar los libros');
+    }
+  });
+}
+
+
+function getBook(){
+  var id = window.location.pathname.split('/').reverse()[0];
+  // console.log(id)
+  // console.log(id)
+  $.ajax({
+    method: 'GET',
+    url: `${Config.PUBLIC_URL}/libros/${id}`,
+    headers: {
+      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+    },
+  }).done(function(res){
+    console.log(res)
+    if(res.success){
+      console.log('hey')
+      document.getElementById('img_book').setAttribute('src', `${Config.URL}/static/images/${res.book.image || 'default.png'}`);
+      document.getElementById('download_button').setAttribute('href', `${Config.URL}/static/books/${res.book.file}`);
+      document.getElementById("download_button").addEventListener("click", downloadBook);
+      // /static/books/${book}
+      $('#num_downloads').text(`Descargas: ${res.book.downloads}`);
+      
+      $('#word_cloud').jQCloud(res.book.keywords, {
+        width: 450, 
+        height: 350, 
+        fontSize: {
+          from: 0.05,
+          to: 0.04
+        }
+      });
+    }else{
+      alert(res.msg);
+    }
+  });
+}
+
+function downloadBook(){
+  var id = window.location.pathname.split('/').reverse()[0];
+  $.ajax({
+    method: 'GET',
+    url: `${Config.PUBLIC_URL}/libro/download/${id}`,
+    headers: {
+      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+    },
+  }).done(function(res){
+    if(res.success){
+        $('#num_downloads').text(`Descargas: ${res.downloads_counter}`);
+    }else{
+      console.warn(res);
     }
   });
 }
@@ -23,7 +80,8 @@ var contador_grupos = 0;
 var contador_item = 0;
 
 //Se recorre el objeto JSON
-const addBookDom = function(arr){
+const addBookDom = function(arr, show_info){
+  console.log(arr)
   arr.forEach(element => {
       //Si el grupo div n que contiene los 3 elementos de tamaño 4 cada uno, se crea un nuevo grupo div n
       if(contador_item == 3){
@@ -36,7 +94,7 @@ const addBookDom = function(arr){
           contador_grupos++;
           $(`#content_books`).append(
               `<div class="row" id="content_group_${contador_grupos}">
-                  ${formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id)}
+                  ${formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id, show_info)}
               </div>`
           );
           contador_item++;
@@ -44,7 +102,7 @@ const addBookDom = function(arr){
       }else{
           //De existir el primer item en el grupo div n se crean los 2 restantes
           $(`#content_group_${contador_grupos}`).append(
-            formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id)
+            formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id, show_info)
           );
           contador_item++;
       }
@@ -59,19 +117,19 @@ const titleCase = function(string, tipo){
     let strFinal = [];
     let sUp;
     strSplit.forEach(s => {
-	sUp = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-	strFinal.push(sUp);
+      sUp = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+      strFinal.push(sUp);
     });
-	return strFinal.join(' ');
-    } else if (tipo == 'titulo') {
-	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    return strFinal.join(' ');
+    }else if (tipo == 'titulo') {
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
 }
 
-function formato_item(titulo, autor, descripcion, img, book, licencia, id){
+function formato_item(titulo, autor, descripcion, img, book, licencia, id, show_info){
     let tituloBien = titleCase(titulo, 'titulo');
-    console.log(tituloBien);
-    let autorBien = titleCase(autor, 'autor');
+    // console.log(tituloBien);
+    // let autorBien = titleCase(autor, 'autor');
     let licenciaIcon;
     let tituloDom;
     if (licencia == undefined){
@@ -86,26 +144,47 @@ function formato_item(titulo, autor, descripcion, img, book, licencia, id){
     } else{
         tituloDom = `<h3>${tituloBien}</h3>`;
     };
-    let contenido_item =
-        `<div class="col-md-4 col-sm-4">
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    ${tituloDom}
-                    <p class="autor">${autorBien}</p>
-                </div>
-                <div class="panel-body panel-body-background">
-                    <div class="col-md-12">
-                        <img class="center-block" src="/static/images/${img || 'default.jpg'}" alt="">
-                        <a title="Leer libro" href="/static/books/${book}" class="btn btn-primary btn-upload" download><i class="fab fa-readme"></i></a>
-                    </div>
-                </div>
-                <p class="licencia">
-                 <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
+    let contenido_item;
+    if(!show_info){
+      contenido_item =
+      `<div class="col-md-4 col-sm-4">
+          <div class="panel panel-warning">
+              <div class="panel-heading">
+                  <a href="/user/libro/${id}">${tituloDom}</a>
+              </div>
+              <div class="panel-body panel-body-background">
+                  <div class="col-md-12">
+                      <img class="center-block" src="/static/images/${img || 'default.png'}" alt="">
+                      <a title="Leer libro" href="/static/books/${book}" class="btn btn-primary btn-upload" download><i class="fab fa-readme"></i></a>
+                  </div>
+              </div>
+              <p class="licencia">
+               <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
+               <a href="/licencias" data-toggle="tooltip" title="${licencia}"><i class="${licenciaIcon}"></i></a>
+              </p>
+          </div>
+      </div>`;
+    }else{
+      console.log('heyheyheyey')
+      contenido_item =
+      `<div class="col-md-4 col-sm-4">
+          <div class="panel panel-warning">
+              <div class="panel-heading">
+                  <a href="/user/libro/${id}">${tituloDom}</a>
+              </div>
+              <div class="panel-body panel-body-background">
+                  <div class="col-md-12">
+                      <img class="center-block" src="/static/images/${img || 'default.png'}" alt="">
+                      <a title="Ver estadísticas" href="${Config.URL}/user/autor/my-books/${id}" class="btn btn-primary btn-upload"><i class="fas fa-chart-bar"></i></a>
+                  </div>
+              </div>
+              <p class="licencia">
+               <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
 <a href="/licencias" data-toggle="tooltip" title="${licencia}"><i class="${licenciaIcon}"></i></a>
-                </p>
-            </div>
-        </div>`;
-
+              </p>
+          </div>
+      </div>`;
+    }
     return contenido_item;
 }
 // <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
@@ -140,8 +219,11 @@ const denounceBook = function(){
   let desc = document.getElementById('desc').value;
   $.ajax({
     method: 'POST',
-    url: `${API}/libro/denounce`,
+    url: `${Config.PUBLIC_URL}/libro/denounce`,
     data: {desc: desc, id: book_id},
+    headers: {
+      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+    },
   }).done(function(res){
     alert(res.msg);
   });
@@ -151,7 +233,10 @@ const filterBooks = function(criteria){
   removeBooksDom();
   $.ajax({
     method: 'GET',
-    url: `${API}/libros/search/${criteria}`
+    url: `${Config.PUBLIC_URL}/libros/search/${criteria}`,
+    headers: {
+      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+    },
   }).done(function(res){
     if(res.success){
       searchResults = res.books;
@@ -205,22 +290,20 @@ const uploadBook = function(){
   form_data.append('licence', $('#lice').val() );
   form_data.append('filebook',  $( '#filebook' )[0].files[0]);
   form_data.append('fileimg',  $( '#imagen' )[0].files[0]);
+  form_data.append('autor_id', LocalStorage.getKey('autor_id'));
+
   $.ajax({
       method: 'POST',
-      url: `${API}/libro/upload`,
+      url: `${Config.PUBLIC_URL}/libro/upload`,
       data: form_data,
+      headers: {
+        'Authorization': `Bearer ${LocalStorage.getKey('token')}`
+      },
       processData: false,
       contentType: false,
   }).done(function(res){
     $('#loading').hide()
     if(!res.success && res.code == 400) alert(res.msg);
-    else window.location.href = `${ROOT}/${res.route}`;
+    else window.location.href = `${Config.URL}/${res.route}`;
   });
 }
-
-
-$('#loading').hide()
-getBooks(page);
-searchInput();
-pageButtons();
-// assignUrlToForm();
