@@ -16,6 +16,7 @@ const getBooks = function(page){
     },
   }).done(function(res){
     if(res.success){
+      console.log(res);
       addBookDom(res.books);
       if (res.books.length < 24) document.getElementById('nextPage').classList.add('hiddenButton');
     }else{
@@ -38,12 +39,31 @@ function getBook(){
   }).done(function(res){
     console.log(res)
     if(res.success){
-      console.log('hey')
       document.getElementById('img_book').setAttribute('src', `${Config.URL}/static/images/${res.book.image || 'default.png'}`);
       document.getElementById('download_button').setAttribute('href', `${Config.URL}/static/books/${res.book.file}`);
       document.getElementById("download_button").addEventListener("click", downloadBook);
+      document.getElementById("title").innerHTML = res.book.title;
       // /static/books/${book}
-      $('#num_downloads').text(`Descargas: ${res.book.downloads}`);
+      $('#num_downloads').text(`${res.book.downloads}`);
+      res.book.comments.map((e, i) => {
+        $('#comments').append(
+            `<li class="clearfix">
+                <span class="chat-img pull-left">
+                    <img src="" class="img-circle" /> 
+                </span> 
+                <div class="chat-body clearfix"> 
+                    <div class="header"> 
+                        <a class="primary-font" href="/user/perfil/${e.autor_id}" ><i>@${e.autor}</i></a> 
+                        <small class="pull-right text-muted"> 
+                            <span class="glyphicon glyphicon-time"></span>
+                              ${e.date}
+                        </small>
+                    </div>
+                    <p> ${e.text} </p> 
+                </div> 
+                </li>`
+        );
+      });
       
       $('#word_cloud').jQCloud(res.book.keywords, {
         width: 450, 
@@ -81,8 +101,9 @@ var contador_item = 0;
 
 //Se recorre el objeto JSON
 const addBookDom = function(arr, show_info){
-  console.log(arr)
-  arr.forEach(element => {
+  console.log(arr, show_info)
+  arr.map(element => {
+      console.log(show_info);
       //Si el grupo div n que contiene los 3 elementos de tamaño 4 cada uno, se crea un nuevo grupo div n
       if(contador_item == 3){
           contador_item = 0;
@@ -94,7 +115,7 @@ const addBookDom = function(arr, show_info){
           contador_grupos++;
           $(`#content_books`).append(
               `<div class="row" id="content_group_${contador_grupos}">
-                  ${formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id, show_info)}
+                  ${formato_item(element, show_info)}
               </div>`
           );
           contador_item++;
@@ -102,7 +123,7 @@ const addBookDom = function(arr, show_info){
       }else{
           //De existir el primer item en el grupo div n se crean los 2 restantes
           $(`#content_group_${contador_grupos}`).append(
-            formato_item(element.name, element.author, element.descripcion, element.image, element.file, element.licencia, element.id, show_info)
+            formato_item(element, show_info)
           );
           contador_item++;
       }
@@ -112,33 +133,32 @@ const addBookDom = function(arr, show_info){
 //formato_item: devuelve item a item el recorrido del objeto JSON
 
 const titleCase = function(string, tipo){
+    console.log(string)
     if (tipo == 'autor') {
-    const strSplit = string.split(' ');
-    let strFinal = [];
-    let sUp;
-    strSplit.forEach(s => {
-      sUp = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-      strFinal.push(sUp);
-    });
-    return strFinal.join(' ');
+      const strSplit = string.split(' ');
+      let strFinal = [];
+      let sUp;
+      strSplit.forEach(s => {
+        sUp = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+        strFinal.push(sUp);
+      });
+      return strFinal.join(' ');
     }else if (tipo == 'titulo') {
-      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    };
+     return `${string.charAt(0).toUpperCase()}${string.slice(1).toLowerCase()}`;
+    }
 }
-
-function formato_item(titulo, autor, descripcion, img, book, licencia, id, show_info){
-    let tituloBien = titleCase(titulo, 'titulo');
-    // console.log(tituloBien);
-    // let autorBien = titleCase(autor, 'autor');
+// titulo, autor, descripcion, img, book, licencia, id, show_info
+function formato_item(book, show_info){
+    let tituloBien = titleCase(book.name, 'titulo');
     let licenciaIcon;
     let tituloDom;
-    if (licencia == undefined){
-	licenciaIcon = "";
-    } else if (licencia == "Creative Commons"){
-	licenciaIcon = "fab fa-creative-commons"
-    } else {
-	licenciaIcon = "fab fa-creative-commons-share"
-    };
+    if (book.licencia == undefined){
+    licenciaIcon = "";
+      } else if (book.licencia == "Creative Commons"){
+    licenciaIcon = "fab fa-creative-commons"
+      } else {
+    licenciaIcon = "fab fa-creative-commons-share"
+      };
     if (tituloBien.length > 40) {
         tituloDom = `<h3 class="smallTitle">${tituloBien}</h3>`;
     } else{
@@ -150,37 +170,39 @@ function formato_item(titulo, autor, descripcion, img, book, licencia, id, show_
       `<div class="col-md-4 col-sm-4">
           <div class="panel panel-warning">
               <div class="panel-heading">
-                  <a href="/user/libro/${id}">${tituloDom}</a>
+                <a href="/user/libro/${book.id}">${tituloDom}</a>
+                <a class="text-center" href="${Config.URL}/user/perfil/${book.autor.autor_id}">
+                  <i>@${book.autor.name}</i>
+                </a>
               </div>
               <div class="panel-body panel-body-background">
                   <div class="col-md-12">
-                      <img class="center-block" src="/static/images/${img || 'default.png'}" alt="">
-                      <a title="Leer libro" href="/static/books/${book}" class="btn btn-primary btn-upload" download><i class="fab fa-readme"></i></a>
+                      <img class="center-block" src="/static/images/${book.image || 'default.png'}" alt="">
+                      <a title="Leer libro" href="/static/books/${book.file}" class="btn btn-primary btn-upload" download><i class="fab fa-readme"></i></a>
                   </div>
               </div>
               <p class="licencia">
-               <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
-               <a href="/licencias" data-toggle="tooltip" title="${licencia}"><i class="${licenciaIcon}"></i></a>
+               <a href="#" onclick="openDenounce(${book.id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
+               <a href="/licencias" data-toggle="tooltip" title="${book.licencia}"><i class="${book.licenciaIcon}"></i></a>
               </p>
           </div>
       </div>`;
     }else{
-      console.log('heyheyheyey')
       contenido_item =
-      `<div class="col-md-4 col-sm-4">
+      `<div class="col-md-4 col-sm-12">
           <div class="panel panel-warning">
               <div class="panel-heading">
-                  <a href="/user/libro/${id}">${tituloDom}</a>
+                  <a href="/user/libro/${book.id}">${tituloDom}</a>
               </div>
               <div class="panel-body panel-body-background">
                   <div class="col-md-12">
-                      <img class="center-block" src="/static/images/${img || 'default.png'}" alt="">
-                      <a title="Ver estadísticas" href="${Config.URL}/user/autor/my-books/${id}" class="btn btn-primary btn-upload"><i class="fas fa-chart-bar"></i></a>
+                      <img class="center-block" src="/static/images/${book.image || 'default.png'}" alt="">
+                      <a title="Ver estadísticas" href="${Config.URL}/user/autor/my-books/${book.id}" class="btn btn-primary btn-upload"><i class="fas fa-chart-bar"></i></a>
                   </div>
               </div>
               <p class="licencia">
-               <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
-<a href="/licencias" data-toggle="tooltip" title="${licencia}"><i class="${licenciaIcon}"></i></a>
+               <a href="#" onclick="openDenounce(${book.id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
+<a href="/licencias" data-toggle="tooltip" title="${book.licencia}"><i class="${licenciaIcon}"></i></a>
               </p>
           </div>
       </div>`;
@@ -304,6 +326,6 @@ const uploadBook = function(){
   }).done(function(res){
     $('#loading').hide()
     if(!res.success && res.code == 400) alert(res.msg);
-    else window.location.href = `${Config.URL}/${res.route}`;
+    else window.location.href = `${Config.URL}/${res.route}/${res.book_id}`;
   });
 }

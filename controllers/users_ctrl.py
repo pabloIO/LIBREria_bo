@@ -9,7 +9,7 @@ from sqlalchemy import desc
 import uuid
 from config.config import env
 from werkzeug.utils import secure_filename
-from flask import flash, redirect, url_for, jsonify, render_template,send_from_directory
+from flask import flash, redirect, url_for, jsonify, render_template,send_from_directory, request
 from ml_algos import PdfHandler
 from models import tables
 
@@ -62,7 +62,39 @@ class UserCtrl(object):
             res['msg'] = 'Hubo un error al cargar el Libro, inténtelo nuevamente'
             resp = jsonify(res)
             return resp, 500
-            
+
+    @staticmethod
+    def getAuthor(author_id):
+        try:
+            res = {
+                'success': False,
+            }
+            author = tables.AutorIndie.exists(author_id)
+            # if not user:
+            #     return render_template('errors/404.html'), 404
+            # book = tables.Libro.get_book(book_id)
+            user_body = {
+                'id': author.usuario.us_id,
+                'name': author.usuario.complete_name(),
+                'image': author.usuario.us_foto_perfil,
+                'username': author.usuario.us_nombre_usuario,
+                'autor': {
+                    'id': author.ai_id,
+                    'bio': author.ai_biografia,
+                    'publications':  author.ai_cantidad_publicaciones
+                },
+            }
+            res['success'] = True
+            res['user'] = user_body
+            resp = jsonify(res)
+            return resp, 200
+        except Exception as e:
+            print(e)
+            # db.session.rollback()
+            res['msg'] = 'Hubo un error al cargar el Libro, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500
+
     @staticmethod
     def getUser(user_id):
         try:
@@ -96,132 +128,106 @@ class UserCtrl(object):
             return resp, 500
 
     @staticmethod
-    def searchBook(query_p, db, response):
+    def followingUser(user_id, follower_id):
         try:
             res = {
                 'success': False,
             }
-            books = tables.Libro.query.filter(
-                        tables.Libro.autor.like('%{}%'.format(query_p)) |
-                        tables.Libro.nombre_tables.Libro.like('%{}%'.format(query_p)),
-                        tables.Libro.activo == 1
-                    ).all()
-            if books == None:
-                res['books'] = []
-            else:
-                # print(books.comentarios)
-                serialized = [ { 'id': i.id,
-                                'name': i.nombre_tables.Libro,
-                                'file': i.nombre_archivo,
-                                'author': i.autor,
-                                'likes': i.likes,
-                                'licencia': i.licencia,
-                                'image': i.imagen } for i in books ]
-                res['books'] = serialized
-
+            following = tables.AutorSigue.is_following(user_id, follower_id)
             res['success'] = True
+            res['following'] = following.as_activo if following else None
+            resp = jsonify(res)
+            return resp, 200
         except Exception as e:
             print(e)
             # db.session.rollback()
-            res['msg'] = 'Hubo un error al cargar el tables.Libro, inténtelo nuevamente'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
-
+            res['msg'] = 'Hubo un error al cargar el Libro, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500
+    
     @staticmethod
-    def denounceBook(db, request, response):
+    def followUser():
         try:
             res = {
                 'success': False,
             }
-            book = tables.Libro.query.get(request.form['id'])
-            book.denuncia_derechos = request.form['desc']
-            book.activo = False
-            db.session.commit()
-            res['success'] = True
-            res['msg'] = 'El tables.Libro que subió acaba de ser denunciado, revisaremos su solicitud, por el momento ha sido dado de baja de la LIBREria, recargue la página para ver los cambios'
-        except Exception as e:
-            print(e)
-            db.session.rollback()
-            res['msg'] = 'Hubo un error al procesar su solicitud, inténtelo nuevamente'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
-
-    @staticmethod
-    def uploadBook(db, request, response):
-        try:
-            res = {
-                'success': False,
-            }
-            if request.method == 'POST':
-                # print(request.files['fileimg'] == None)
-                if 'filebook' not in request.files:
-                    res['success'] = False
-                    res['msg'] = 'Debe seleccionar un archivo del escrito'
-                    res['code'] = 400
-                bookfile = request.files['filebook']
-                print('subiendo book')
-                imgfile = request.files['fileimg'] if 'fileimg' in request.files else None
-                if bookfile.filename == '':
-                    res['success'] = False
-                    res['msg'] = 'Debe seleccionar un archivo del escrito'
-                    res['code'] = 400
-                if (bookfile and allowed_file(bookfile, 'book')) and (imgfile or allowed_file(imgfile, 'img')):
-                    bookfilename = uuid.uuid4().hex + secure_filename(bookfile.filename)
-                    imgfilename = uuid.uuid4().hex + secure_filename(imgfile.filename) if imgfile else None
-                    print(imgfilename)
-                    print(bookfilename)
-                    autor = tables.AutorIndie.find(request.form['autor_id'])
-                    newBook = tables.Libro(
-                        li_titulo=request.form['book'],
-                        li_idioma=request.form['language'],
-                        li_licencia=request.form['licence'],
-                        li_archivo=bookfilename,
-                        li_imagen=imgfilename,
-                    )
-                    autor.publicacion.append(newBook)
-                    tables.AutorIndie.save(autor)
-                    # db.session.add(autor)
-                    genero = tables.Genero(ge_descripcion = request.form['genre'])
-                    newBook.generos.append(genero)
-                    path_book = os.path.join(env['UPLOADS_DIR'] + '/books', bookfilename)
-                    bookfile.save(path_book)
-                    pdfHandler = PdfHandler.PdfHandler(request.form['language'], path_book)
-                    # pdfHandler = PdfHandler(request.form['language'])
-                    word_cloud = pdfHandler.get_word_cloud(0.15)
-                    newBook.saveKeyWords(word_cloud)
-                    tables.Libro.save(newBook)
-
-                    if imgfilename != None: imgfile.save(os.path.join(env['UPLOADS_DIR'] + '/images', imgfilename))
-                    
-                    res['success'] = True
-                    return
-                    res['route'] = 'libro-exito'
-                else:
-                    print('err')
-                    res['success'] = False
-                    res['msg'] = 'Formato no aceptado'
-                    res['code'] = 400
+            req = request.get_json()
+            following = tables.AutorSigue.is_following(req['user_id'], req['followed_id'])
+            if not following:
+                newfollower = tables.AutorSigue(
+                    autor_sigue=req['user_id'],
+                    autor_seguido=req['followed_id'],
+                )
+                newfollower.save()
             else:
-                res['success'] = True
-                res['route'] = 'tables.Libro-exito'
-        except Exception as e:
-            print(e)
-            db.session.rollback()
-            res['route'] = 'tables.Libro-error'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
-    @staticmethod
-    def downloadBook(book_id):
-        res = { 'success': False }
-        try:
-            book = tables.Libro.exists(book_id)
-            if not book:
-                return render_template('errors/404.html'), 404
-            book.update_num_downloads()
+                following = tables.AutorSigue.is_following(req['user_id'], req['followed_id'])
+                following.as_activo = not req['isFollowing']
+                following.save()
+            res['follow'] = not req['isFollowing']
             res['success'] = True
-            res['downloads_counter'] = book.li_num_descargas
-            return jsonify(res), 200
+            resp = jsonify(res)
+            return resp, 200
         except Exception as e:
             print(e)
-            res['msg'] = 'Hubo un error al actualizar el contador de descargas'
-            return jsonify(res), 200
+            # db.session.rollback()
+            res['msg'] = 'Hubo un error al seguir al autor, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500
+    
+    @staticmethod
+    def getFollowers(author_id):
+        try:
+            res = {
+                'success': False,
+            }
+            _followers = tables.AutorSigue.get_followers(author_id)
+            followers = []
+            for follower in _followers:
+                if follower.as_activo:
+                    followers.append(
+                    {    
+                        'autor_id': follower.seguido.ai_id,
+                        'name': follower.seguido.usuario.complete_name(),
+                        'username': follower.seguido.usuario.us_nombre_usuario,
+                        'image': follower.seguido.usuario.us_foto_perfil
+                    })
+            
+            res['followers'] = followers
+            res['success'] = True
+            resp = jsonify(res)
+            return resp, 200
+        except Exception as e:
+            print(e)
+            # db.session.rollback()
+            res['msg'] = 'Hubo un error al seguir al autor, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500
+
+    @staticmethod
+    def getFollowing(author_id):
+        try:
+            res = {
+                'success': False,
+            }
+            _followers = tables.AutorSigue.get_following(author_id)
+            followers = []
+            for follower in _followers:
+                if follower.as_activo:
+                    followers.append(
+                    {    
+                        'autor_id': follower.seguidor.ai_id,
+                        'name': follower.seguidor.usuario.complete_name(),
+                        'username': follower.seguidor.usuario.us_nombre_usuario,
+                        'image': follower.seguidor.usuario.us_foto_perfil
+                    })
+            
+            res['following'] = followers
+            res['success'] = True
+            resp = jsonify(res)
+            return resp, 200
+        except Exception as e:
+            print(e)
+            # db.session.rollback()
+            res['msg'] = 'Hubo un error al seguir al autor, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500

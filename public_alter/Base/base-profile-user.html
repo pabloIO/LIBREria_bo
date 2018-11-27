@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta lang="es">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="LIBREria" />
+    <title>Perfil</title>
+    <link rel="shortcut icon" href="../static/icon/icon.ico">
+    <link href="{{ url_for('static', filename = 'assets/css/bootstrap.css') }} " rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/style.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.min.css')}} ">
+</head>
+<body>
+<div class="row">
+    <div class="col-md-12">
+        <section class="menu-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                                <ul id="menu-top" class="nav navbar-nav navbar-right">
+                                    <li><a class="link-menu" href="/user/dashboard">Biblioteca</a></li>
+                                    <li><a class="link-menu" href="/user/poema">Poema</a></li>
+                                    <li><a class="link-menu" href="/user/nosotros">Nosotros</a></li>
+                                    <li><a class="link-menu" href="/user/bibliotecas">Bibliotecas</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <h1 class="page-header">Perfil de usuario
+                <small> </small>
+            </h1>
+    </div>
+</div>
+<!--Fin-->
+<div class="row">
+    <div class="col-md-3">
+        <div class="col-md-12">
+            <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
+        </div>
+        <div class="col-md-12">
+            <p id="name"><strong></strong></p>
+            <a  id="username"><em></em></a>
+        </div>
+        <!--
+        <div class="col-md-12 text-center">
+            <ul class="list-unstyled list-inline list-social-icon">
+                <li>
+                    <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
+                </li>
+            </ul>
+        </div>
+        -->
+        <div class="col-md-12">
+            <br>
+            <ul class="list-group list-primary">
+                <a href="/user/perfil" class="list-group-item">Mi perfil</a>
+                <a href="/user/favorito" class="list-group-item">Favoritos</a>
+                <a href="/user/autor/my-books" class="list-group-item">Mis libros</a>
+                <a href="/user/seguidores" class="list-group-item">Seguidores</a>
+                <a href="/user/siguiendo" class="list-group-item">Siguiento</a>
+                <a href="/user/config" class="list-group-item">Configuración</a>
+            </ul>
+        </div>
+    </div>
+    <!--FIN-->
+    <div class="col-md-9">
+        <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+            <h3 style="text-align: center">{% block title %}{% endblock %}<p><small>{% block description %}{% endblock %}</small></p></h3>
+        </div>
+        <form>
+            <div class="col-md-12" style="border-width: 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                {% block content %}{% endblock %}
+            </div>
+        </form>
+    </div>
+    </div>
+    <script src="{{ url_for('static', filename = 'bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.js')}} "></script>
+    <script src="{{ url_for('static', filename = 'bower_components/chart.js/dist/Chart.min.js')}} "></script>
+    <script src="{{ url_for('static', filename = 'assets/js/bootstrap.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Config.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/LocalStorage.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Auth.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/LIBREria.js')}}"></script>
+    {% block js %}{% endblock %}
+
+</body>
+</html>

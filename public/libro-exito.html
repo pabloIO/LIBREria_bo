@@ -23,5 +23,10 @@
 	</div>
     </div>
 </div>
-
+<script>
+	var id = window.location.pathname.split('/').reverse()[0];
+	setTimeout(() => {
+		window.location.href = `${Config.URL}/user/libro/${id}`;		
+	}, 2500);
+</script>
 {% endblock %}

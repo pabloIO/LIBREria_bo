@@ -1,0 +1,61 @@
+{% extends "Base/base-auth.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block content %}
+<br>
+<div class="row">
+        <div class="col-md-2">
+        </div>
+    <!--FIN-->
+    <div class="col-md-10">
+        <form novalidate>
+            <div class="col-md-4" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                    <div class="form-group">
+                            <img id="img_book" src="{{ url_for('static', filename = 'images/default.png')}}" width="100%" height="auto" class="img-responsive img-portfolio img-hover">
+                        </div>
+            </div>
+            <div class="col-md-6" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <br>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-12">
+                                    <div id="word_cloud"></div>                                    
+                                    </div>
+                                </div>
+                            <p class="help-block"></p>
+                        </div>
+                        <div class="control-group form-group">
+                        <div class="controls">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary">Publicado</button>
+                                <a type="button" class="btn btn-primary" id="download_button"  download>Descarga</a>
+                                <button type="button" class="btn btn-primary">Leer</button>
+                                <p class="form-control" id="num_downloads" ></p>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </form>
+    </div>
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-5">
+            <form>
+                <div class="col-md-12">
+                    <textarea name="" id="" rows="10"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+<br>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function(){
+        getBook();
+    });
+</script>
+{% endblock %}
+

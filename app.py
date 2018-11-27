@@ -27,6 +27,7 @@ app.config['SECRET_KEY'] = env['APP_SECRET']
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/user'
 app.config['JWT_SECRET_KEY'] = env['APP_SECRET'] 
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False 
 # app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
 # cors = CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
 
@@ -96,6 +97,11 @@ def dashboard():
 def profile():
     return render_template('views/perfil.html')
 
+@app.route('/user/perfil/<string:user_id>', methods = ['GET'])
+@jwt_required
+def user_profile(user_id):
+    return render_template('views/user-perfil.html')
+
 
 @app.route('/cookie')
 def cookie():
@@ -124,9 +130,9 @@ def bibliotecas():
     return render_template('bibliotecas.html')
 
 ## CREAR ESTAS DOS PAGINAS
-@app.route("/user/libro-exito")
-@jwt_required
-def upload_success():
+@app.route("/libro-exito/<book_id>")
+# @jwt_required
+def upload_success(book_id):
     return render_template('libro-exito.html')
 
 @app.route("/libro-error")
@@ -150,6 +156,14 @@ def get_my_books():
 def get_my_book_stats(book_id):
     return render_template('views/estadisticas-libro.html')
 
+@app.route("/user/autor/followers", methods=['GET'])
+def get_followers_view():
+    return render_template('views/seguidores.html')
+
+@app.route("/user/autor/following", methods=['GET'])
+def get_following_view():
+    return render_template('views/siguiendo.html')
+
 #############################
 #############################
 #############################
@@ -170,6 +184,10 @@ def books_search(criteria):
 def book(book_id):
     return libros_ctrl.LibrosCtrl.getBook(book_id)
 
+@app.route(env['API_VERSION'] + "/libro/comment", methods=['POST'])
+def comment_book():
+    return libros_ctrl.LibrosCtrl.commentBook()
+
 @app.route(env['API_VERSION'] + "/libro/upload", methods=['POST', 'GET'])
 # @jwt_required
 def upload_book():
@@ -184,9 +202,25 @@ def download_book(book_id):
 def denounce_book():
     return libros_ctrl.LibrosCtrl.denounceBook(db, request, Response)
 
-@app.route(env['API_VERSION'] + "/profile/<user_id>", methods=['GET'])
-def get_user_data(user_id):
-    return users_ctrl.UserCtrl.getUser(user_id)
+@app.route(env['API_VERSION'] + "/profile-author/<author_id>", methods=['GET'])
+def get_author_data(author_id):
+    return users_ctrl.UserCtrl.getAuthor(author_id)
+
+@app.route(env['API_VERSION'] + "/following/<user_id>/<follower_id>", methods=['GET'])
+def user_following(user_id, follower_id):
+    return users_ctrl.UserCtrl.followingUser(user_id, follower_id)
+
+@app.route(env['API_VERSION'] + "/follow", methods=['POST'])
+def follow_user():
+    return users_ctrl.UserCtrl.followUser()
+
+@app.route(env['API_VERSION'] + "/followers/<author_id>", methods=['GET'])
+def get_followers(author_id):
+    return users_ctrl.UserCtrl.getFollowers(author_id)
+
+@app.route(env['API_VERSION'] + "/following/<author_id>", methods=['GET'])
+def get_following(author_id):
+    return users_ctrl.UserCtrl.getFollowing(author_id)
 
 @app.route(env['API_VERSION'] + "/profile/books/<autor_id>", methods=['GET'])
 def get_autor_books(autor_id):
@@ -213,35 +247,6 @@ def poema_lineas():
 @app.route(env['API_VERSION'] + "/poems/upload/<verso>", methods=['POST'])
 def upload_poem(verso):
     return poem_ctrl.PoemCtrl.uploadPoem(db, request, verso, Response)
-
-@app.route('/Enviar',methods=['POST','GET'])
-def Enviar():
-    try:
-        _name = request.form['inputName']
-        _email = request.form['inputEmail']
-        _password = request.form['inputPassword']
-        # validate the received values
-        if _name and _email and _password:
-            # All Good, let's call MySQL
-            conn = mysql.connect()
-            cursor = conn.cursor()
-            _hashed_password = generate_password_hash(_password)
-            cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
-            data = cursor.fetchall()
-
-            if len(data) is 0:
-                conn.commit()
-                return json.dumps({'message':'Registrado con exito'})
-            else:
-                return json.dumps({'error':str(data[0])})
-        else:
-            return json.dumps({'html':'<span>Ingrese datos validos</span>'})
-
-    except Exception as e:
-        return json.dumps({'error':str(e)})
-    finally:
-        cursor.close() 
-        conn.close()
 
 #############################
 #############################

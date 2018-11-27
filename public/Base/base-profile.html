@@ -13,6 +13,7 @@
     <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.min.css')}} ">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'assets/css/ver-libro.css')}} ">
 </head>
 
 <body>
@@ -35,22 +36,85 @@
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-                            <li><a class="link-menu" href="/">Biblioteca</a></li>
-                            <li><a class="link-menu" href="/poema">Poema</a></li>
+                            <li><a class="link-menu" href="/user/dashboard">LIBREria</a></li>
                             <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
-                            <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
+                            <!-- <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li> -->
                             <!--Usuario-->
                             <li><a href="#" class="link-menu" data-toggle="modal" data-target="#myModal">Sube un libro</a></li>
                             <li><a href="/user/perfil" class="link-menu">Perfil</a></li>
                             <!--Usuario-->
                             <li><a href="#" onclick="Auth.logout()" class="link-menu">Cerrar sesión</a></li>
-                            <li><a href="#" class="link-menu">Ayuda</a></li>
+                            <!-- <li><a href="#" class="link-menu">Ayuda</a></li> -->
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    <!-- <div class="row">
+    <div class="col-md-12">
+        
+        <section class="menu-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                                <ul id="menu-top" class="nav navbar-nav navbar-right">
+                                    <li><a class="link-menu" href="/">Biblioteca</a></li>
+                                    <li><a class="link-menu" href="/poema">Poema</a></li>
+                                    <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
+                                    <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <h1 class="page-header">Perfil de usuario
+                <small> </small>
+            </h1>
+    </div>
+</div> -->
+<!--Fin-->
+<div class="row">
+        <div class="col-md-3">
+            <div class="col-md-12">
+                <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-8">
+                    <p id="name"><strong></strong></p>
+                    <a  id="username"><em></em></a>
+                </div>
+                <div class="col-md-4">
+                    <div id="following-container"></div>
+                </div> 
+            </div>
+            <!--
+            <div class="col-md-12 text-center">
+                <ul class="list-unstyled list-inline list-social-icon">
+                    <li>
+                        <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
+                    </li>
+                </ul>
+            </div>
+            -->
+            <div class="col-md-12">
+                <br>
+                <ul class="list-group list-primary">
+                    <a href="#" class="list-group-item">Favoritos</a>
+                    <a href="/user/autor/my-books" class="list-group-item">Mis libros</a>
+                    <a href="/user/autor/followers" class="list-group-item" href="">Seguidores</a>
+                    <a href="/user/autor/following" class="list-group-item">Siguiendo</a>
+                    <a href="" class="list-group-item">Configuración</a>
+                </ul>
+            </div>
+        </div>
+        <!--FIN-->
 {% block content %}{% endblock %}
 <!--Modal subir libro-->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -133,7 +197,15 @@
     <script src="{{ url_for('static', filename = 'assets/js/Config.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/LocalStorage.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/Auth.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Comment.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/LIBREria.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'assets/js/ver-libro.js')}} ">
+    <script >
+        var id = window.location.pathname.split('/').reverse()[0];
+        User.getAuthor(id);
+        User.isFollowing(id);
+    </script>
     {% block js %}{% endblock %}
 
 </body>

@@ -8,6 +8,9 @@ import uuid
 import enum
 from passlib.hash import pbkdf2_sha256
 from sqlalchemy import desc
+from app import db
+from sqlalchemy import text, or_, and_
+
 publicacion = db.Table('lb_autor_publica', #libro tiene like
     # db.Column('au_pub_id', db.Integer, primary_key=True, default = uuid.uuid4() ),
     db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
@@ -15,15 +18,24 @@ publicacion = db.Table('lb_autor_publica', #libro tiene like
     db.Column('au_pub_fecha_creacion', db.DateTime, default=datetime.utcnow),
     db.Column('au_pub_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
 )
-
-libro_comentario = db.Table('lb_libro_comentarios',
-    db.Column('cm_id', db.Integer, primary_key=True),
-    db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
-    db.Column('autor_id', db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
-    db.Column('cm_texto', db.Text, nullable=False),
-    db.Column('cm_fecha_creacion', db.DateTime, default=datetime.utcnow),
-    db.Column('cm_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
-)
+class Comentario(db.Model):
+    __tablename__ = 'lb_libro_comentarios'
+    cm_id = db.Column(db.Integer, primary_key=True)
+    libro_id = db.Column(db.Integer, db.ForeignKey('lb_libro.li_id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), nullable=False)
+    cm_texto = db.Column(db.Text, nullable=False)
+    cm_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    cm_fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
+    autor = db.relationship('AutorIndie', backref="lb_libro_comentarios", lazy=True)
+    libro = db.relationship('Libro', backref="lb_libro_comentarios", lazy=True)
+# libro_comentario = db.Table('lb_libro_comentarios',
+#     db.Column('cm_id', db.Integer, primary_key=True),
+#     db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
+#     db.Column('autor_id', db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
+#     db.Column('cm_texto', db.Text, nullable=False),
+#     db.Column('cm_fecha_creacion', db.DateTime, default=datetime.utcnow),
+#     db.Column('cm_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
+# )
 
 generos =  db.Table('lb_libro_genero',
     db.Column('lg_id', db.Integer, primary_key=True, autoincrement=True),
@@ -106,7 +118,7 @@ class PalabrasClave(db.Model):
 
     def save(self, words):
         try:
-            ## subir para palabra clave
+            ## subir palabra clave
             pass
         except Exception as e:
             pass
@@ -129,7 +141,7 @@ class Libro(db.Model):
     li_canal_socket = db.Column(db.String(255), nullable=False, default=uuid.uuid4().hex)
     #     ## Define back relation with Conversacion
     # autor = db.relationship('AutorIndie', secondary=publicacion, backref=db.backref('lb_libro', lazy='dynamic'))
-    comentarios = db.relationship('AutorIndie', secondary=libro_comentario, backref=db.backref('lb_libro', lazy='dynamic'))
+    comentarios = db.relationship('Comentario', backref='lb_libro', lazy=True)
     generos = db.relationship('Genero', secondary=generos, backref=db.backref('lb_libro', lazy='dynamic'))
     palabras_clave = db.relationship('PalabrasClave', backref="lb_libro", lazy=True)
     # li_denuncias = db.relationship('Denuncia', secondary=denuncias, lazy="subquery", backref="lb_libro")
@@ -170,6 +182,27 @@ class Libro(db.Model):
                     .paginate(page=int(page_num), per_page=24) \
                     .items
 
+    @classmethod
+    def getAuthor(cls, autor_id):
+        sql = text(""" 
+        SELECT u.us_nombre, u.us_apellidos, u.us_id, u.us_foto_perfil, ai.ai_id  
+        FROM lb_libro as l 
+        INNER JOIN lb_autor_publica as ap ON ap.libro_id = l.li_id 
+        INNER JOIN lb_autor_indie as ai ON ap.autor_id = ai.ai_id 
+        INNER JOIN lb_usuario as u ON ai.usuario_id = u.us_id
+        WHERE l.li_id = :id
+        """)
+        result = db.engine.execute(sql, {"id": autor_id})
+        names = []
+        res = {}
+        for index, row in enumerate(result):
+            res = {
+                "name": "{0} {1}".format(row[0], row[1]),
+                "used_id": row[2],
+                "image": row[3],
+                "autor_id": row[4] 
+            }
+        return res
 class Genero(db.Model):
     __tablename__ = 'lb_genero'
     ge_id = db.Column(db.Integer, primary_key=True)
@@ -191,14 +224,17 @@ class AutorIndie(db.Model):
     ai_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     ai_fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
     publicacion = db.relationship('Libro', secondary=publicacion, backref=db.backref('lb_autor_indie', lazy='dynamic'))
+    comentarios = db.relationship('Comentario', backref='lb_autor_indie', lazy=True)
     # ai_autor_sigue = db.relationship('AutorSigue', backref='lb_autor_indie', lazy=True) #Revisar
+    usuario = db.relationship('Usuario', backref="lb_autor_indie", lazy=True)
     
     def save(self):
         db.session.add(self)    
         db.session.commit()  
+
     @classmethod
     def exists(cls, aid):
-        return cls.query.filter_by(ai_id = aid).first()  
+        return cls.query.filter_by(ai_id = aid).first()   
 
 class AutorSigue(db.Model): ##Revisar.... tabla autor->pendiente...
     __tablename__ = 'lb_autor_sigue'
@@ -208,7 +244,29 @@ class AutorSigue(db.Model): ##Revisar.... tabla autor->pendiente...
     as_activo = db.Column(db.Boolean, nullable=False, default=True)
     as_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     as_fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
+    seguido = db.relationship('AutorIndie', foreign_keys=[autor_sigue], backref='seguidor_usuario')
+    seguidor = db.relationship('AutorIndie', foreign_keys=[autor_seguido], backref='seguidor_siguiendo')
 
+    def save(self):
+        db.session.add(self)    
+        db.session.commit()  
+
+    @classmethod
+    def is_following(cls, mid, followerId):
+        return cls.query.filter(
+                cls.autor_sigue == mid, cls.autor_seguido == followerId ).first() 
+
+    @classmethod
+    def get_followers(cls, mid):
+        return cls.query.filter(
+            cls.autor_seguido==mid
+        ).all()
+
+    @classmethod
+    def get_following(cls, mid):
+        return cls.query.filter(
+            cls.autor_sigue==mid
+        ).all()
 # class Comentario(db.Model):
 #     __tablename__ = 'lb_comentarios' 
 #     cm_id = db.Column(db.Integer, primary_key=True)

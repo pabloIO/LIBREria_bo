@@ -76,9 +76,9 @@ class LoginCtrl(object):
                 user.autor.append(autor)
                 # print(user)
                 # return
-                tables.Usuario.save(user)
+                # tables.Usuario.save(user)
                 # print(created)
-
+                user.save()
                 res['success'] = True
                 res['msg'] = 'Se creo un usuario con exito'
                 access_token = create_access_token(identity=req['username'])
@@ -90,15 +90,17 @@ class LoginCtrl(object):
                     'image': user.us_foto_perfil,
                     'socket': user.us_canal_socket,
                     'rol': user.rol_id,
+                    'autor_id': user.autor[0].ai_id,
                     'token': access_token,
                 }
                 set_access_cookies(jsonify(res), access_token)
-
             else:
                 res['msg'] = 'Usuario existente'
-            return jsonify(res)
+            resp = jsonify(res)
+            return resp, 200
         except Exception as e:
             print(e)
+            db.session.rollback()
             res['msg'] = 'Hubo un error al registrarse, inténtelo de nuevo'
             res['code'] = 500
             return jsonify(res)

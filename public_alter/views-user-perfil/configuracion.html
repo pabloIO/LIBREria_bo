@@ -1,0 +1,18 @@
+{% extends "Base/base-profile-user.html" %}
+{% block title %} Configuración {% endblock %}
+{% block content %}
+<div class="form-group">
+        <h3>
+            <small>Siguiendo autor</small>
+        </h3>
+        <h5> Recibir mensaje a correo, cuando se suba un libro.</h5>
+        <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="defaultUnchecked">
+                <label class="custom-control-label" for="defaultUnchecked">Default unchecked</label>
+            </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Guardar</button>
+    </div>
+
+{% endblock %}

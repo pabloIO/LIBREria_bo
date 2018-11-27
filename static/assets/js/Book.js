@@ -19,11 +19,14 @@ var Book = (function(){
                         width: 450, 
                         height: 350, 
                     });
+                    $('#comment_word_cloud').jQCloud(res.comment_wc, {
+                        width: 450, 
+                        height: 350, 
+                    });
                     $('#book_title').text(res.book.title);
                     var ctx = document.getElementById('word_cloud_book_chart').getContext('2d');
                     var labels = res.book.keywords.map((e, i ) => e.text).slice(0,30);
                     var key_word_count = res.book.keywords.map((e, i ) => e.weight).slice(0,30);
-                    console.log(labels, key_word_count);
                     var myBarChart = new Chart(ctx, {
                         type: 'horizontalBar',
                         data: {

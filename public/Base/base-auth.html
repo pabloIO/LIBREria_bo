@@ -13,6 +13,7 @@
     <link href="{{ url_for('static', filename = 'assets/css/LIBREria.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename = 'assets/css/fontawesome.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.min.css')}} ">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'assets/css/ver-libro.css')}} ">
 </head>
 
 <body>
@@ -36,16 +37,15 @@
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-                            <li><a class="link-menu" href="/">Biblioteca</a></li>
-                            <li><a class="link-menu" href="/poema">Poema</a></li>
+                            <li><a class="link-menu" href="/user/dashboard">LIBREria</a></li>
                             <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
-                            <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
+                            <!-- <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li> -->
                             <!--Usuario-->
                             <li><a href="#" class="link-menu" data-toggle="modal" data-target="#myModal">Sube un libro</a></li>
                             <li><a href="/user/perfil" class="link-menu">Perfil</a></li>
                             <!--Usuario-->
                             <li><a href="#" onclick="Auth.logout()" class="link-menu">Cerrar sesión</a></li>
-                            <li><a href="#" class="link-menu">Ayuda</a></li>
+                            <!-- <li><a href="#" class="link-menu">Ayuda</a></li> -->
                         </ul>
                     </div>
                 </div>
@@ -134,7 +134,10 @@
     <script src="{{ url_for('static', filename = 'assets/js/Config.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/LocalStorage.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/Auth.js')}}"></script>
+    <script src="{{ url_for('static', filename = 'assets/js/Comment.js')}}"></script>
     <script src="{{ url_for('static', filename = 'assets/js/LIBREria.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'assets/js/ver-libro.js')}} ">
+
     {% block js %}{% endblock %}
 
 </body>

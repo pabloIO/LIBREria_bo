@@ -1,65 +1,6 @@
 {% extends "Base/base-profile.html" %}
 {% block title %}LIBREría{% endblock %}
 {% block content %}
-<!-- <div class="row">
-    <div class="col-md-12">
-        
-        <section class="menu-section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                                <ul id="menu-top" class="nav navbar-nav navbar-right">
-                                    <li><a class="link-menu" href="/">Biblioteca</a></li>
-                                    <li><a class="link-menu" href="/poema">Poema</a></li>
-                                    <li><a class="link-menu" href="/nosotros">Nosotros</a></li>
-                                    <li><a class="link-menu" href="/bibliotecas">Bibliotecas</a></li>
-                                </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <h1 class="page-header">Perfil de usuario
-                <small> </small>
-            </h1>
-    </div>
-</div> -->
-<!--Fin-->
-<div class="row">
-    <div class="col-md-3">
-        <div class="col-md-12">
-            <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
-        </div>
-        <div class="col-md-12">
-            <p id="name"><strong></strong></p>
-            <a  id="username"><em></em></a>
-        </div>
-        <!--
-        <div class="col-md-12 text-center">
-            <ul class="list-unstyled list-inline list-social-icon">
-                <li>
-                    <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
-                </li>
-            </ul>
-        </div>
-        -->
-        <div class="col-md-12">
-            <br>
-            <ul class="list-group list-primary">
-                <a href="#" class="list-group-item">Favoritos</a>
-                <a href="/user/autor/my-books" class="list-group-item">Mis libros</a>
-                <a href="#" class="list-group-item">Seguidores</a>
-                <a href="#" class="list-group-item">Siguiendo</a>
-                <a href="" class="list-group-item">Configuración</a>
-            </ul>
-        </div>
-    </div>
-    <!--FIN-->
     <div class="col-md-9">
         <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
             <h3 style="text-align: center">Mi Perfil<p><small>Añadir información para compartir tu perfil</small></p></h3>
@@ -98,6 +39,7 @@
 {% block js %}
 <script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
 <script >
-    User.getUserData()
+    var id = localStorage.getItem('autor_id');
+    User.getAuthor(id)
 </script>
 {% endblock %}

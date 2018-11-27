@@ -24,7 +24,7 @@ class TfIdfAnalyzer(object):
             jsondict = json.load(file)
         return jsondict['stop_words']
 
-    def tf_idf(self, word_data, language,  max_df=0.1):
+    def tf_idf(self, word_data,  max_df=0.1):
         ## Get stop words list from JSON FILE
         ## max_df default = 0.1
         vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=max_df,
@@ -36,7 +36,6 @@ class TfIdfAnalyzer(object):
 
     def count_vectorizer(self, data, max_df=0.1):
         ## Get stop words list from JSON FILE
-        
         vectorizer = CountVectorizer(stop_words=self.STOP_WORDS, max_df=max_df)
         x = vectorizer.fit_transform(data)
         features = vectorizer.get_feature_names()

@@ -1,0 +1,90 @@
+{% extends "Base/base.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block js %}
+{% endblock %}
+{% block content %}
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12"> 
+                    <div class="col-md-8">
+                            <form role="form page-head-line" id="filterBooks">
+                                <div class="form-group has-feedback">
+                                    <input type="text"
+                                        class="form-control input-search"
+                                        id="criteria"
+                                        placeholder="Buscar T&iacute;tulo o Autor"/>
+                                    <input type="reset"
+                                        id="search_clear"
+                                        class="form-control-feedback"
+                                        value="&#xf002;">
+                                </div>
+                            </form>
+                        </div>
+                    <div class="col-md-2">
+                            <button class="btn btn-upload" data-toggle="modal" data-target="#busquedaA">Busqueda avanzada</button>
+                    </div>
+                </div>
+            </div>
+            <div id="content_books"></div>
+        </div>
+      	<div class="container">
+      	    <div class="col-md-12">
+          		<div id="more_books">
+          		    <button type="button" id="nextResults" class="btn btn-upload hiddenButton">Más resultados</button>
+          		    <button type="button" id="nextPage" class="btn btn-upload">Más libros</button>
+          		</div>
+      	    </div>
+      	</div>
+  </div>
+
+  <div class="modal fade" id="denounce" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h4 class="modal-title" id="myModalLabel">Denuncia derechos de autor</h4>
+              </div>
+              <form class="" id="uploadBook">
+                <div class="modal-body">
+                    <blockquote >
+                      <i>La LIBREría solamente difunde material con licencias libres, si el libro que selecciono no cumple con estas características,
+                        envíennos un correo a <strong>openlibreria.bo@gmail.com</strong> con el nombre del libro y una descripción del porque no debería estar en la LIBREria, y este será dado de baja.</i>
+                    </blockquote>
+                    <!-- <div class="form-group">
+                      <label for="desc">Descripción de denuncia</label>
+                      <textarea type="text" class="form-control" id="desc" name="desc" aria-describedby="autorhelp" placeholder="Escriba su denuncia" required></textarea>
+                    </div> -->
+
+                </div>
+                <!-- <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="denounceBook()">Subir</button>
+                </div> -->
+              </form>
+          </div>
+      </div>
+  </div>
+  <div class="modal fade" id="busquedaA" tabindex="-1" role="dialog" aria-labelledby="busquedaALabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="busquedaALabel">Busqueda avanzada....</h4>
+                </div>
+                <form class="" id="uploadBook" enctype="multipart/form-data">
+                  <div class="modal-body">
+                      <div class="form-group">
+                        <label for="lice">Género</label>
+                        <select class="" name="licence" id="lice">
+                          <option value="Dominio público">Fantasía</option>
+                          <option value="Creative Commons">Mitología</option>
+                          <option value="Creative Commons">Programación</option>
+                        </select>
+                      </div>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

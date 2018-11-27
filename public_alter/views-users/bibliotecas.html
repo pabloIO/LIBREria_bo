@@ -1,0 +1,31 @@
+{% extends "Base/base-auth.html" %}
+{% block title %}Donaciones{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/Bibliotecas.js')}}"></script>
+{% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-head-line">Bibliotecas de colaboradores</h1>
+        <div class="col-md-4 col-sm-offset-4 btn-libraries">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-library" onclick="chooseLibrary('BBB')">BBB</button>
+            <button type="button" class="btn btn-library" onclick="chooseLibrary('FUNDAPPAC')">FUNDAPPAC</button>
+            <button type="button" class="btn btn-library" onclick="chooseLibrary('CIS')">CIS</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-10 col-md-offset-1" id="container_library">
+        <img class="img-responsive to-center logo-library" id="img-library" src="{{ url_for('static', filename = 'assets/img/logoBBB.jpg')}}" alt="Biblioteca del Bicentenario de Bolivia">
+        <div id="content_library"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script></script>
+
+{% endblock %}

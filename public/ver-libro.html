@@ -1,57 +1,95 @@
 {% extends "Base/base-auth.html" %}
 {% block title %}LIBREría{% endblock %}
+{% block css%}
+<link rel="stylesheet" href="{{ url_for('static', filename = 'assets/css/ver-libro.css')}}">
+{% endblock%}
 {% block content %}
 <br>
-<div class="row">
-        <div class="col-md-2">
-        </div>
-    <!--FIN-->
-    <div class="col-md-10">
-        <form novalidate>
-            <div class="col-md-4" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
-                    <div class="form-group">
-                            <img id="img_book" src="{{ url_for('static', filename = 'images/default.png')}}" width="100%" height="auto" class="img-responsive img-portfolio img-hover">
-                        </div>
-            </div>
-            <div class="col-md-6" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
-                    <div class="control-group form-group">
-                        <div class="controls">
-                            <br>
-                                <div class="form-group">
-                                    <div class="col-xs-12 col-sm-12">
-                                    <div id="word_cloud"></div>                                    
-                                    </div>
+<div class="container-fluid">
+    <div class="container">
+        <div class="row" id="verlibros">
+                        <!--FIN-->
+            <div class="col-md-10 col-md-offset-1">
+                        <div class="col-md-4">
+                                <div id="verlibro1" style="border-width: 1px 1px 1px 1px; border-radius: 2%; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                                        <button class="btn btn-upload">Denunciar Libro</button>
+                                    <div class="control-group form-group">
+                                                <div class="controls">
+                                                    <img id="img_book" width="100%" height="auto" class="img-responsive to-center">
+                                                </div>
+                                                <p class="clasificacion">
+                                                    <input id="radio1" type="radio" name="estrellas" value="5" display="none">
+                                                    <label title="El mejor" class="starrr" for="radio1">★</label>
+                                                    <input id="radio2" type="radio" name="estrellas" value="4">
+                                                    <label title="Es muy bueno" class="starrr" for="radio2">★</label>
+                                                    <input id="radio3" type="radio" name="estrellas" value="3">
+                                                    <label title="Es bueno" class="starrr" for="radio3">★</label>
+                                                    <input id="radio4" type="radio" name="estrellas" value="2">
+                                                    <label title="Es relativamente Bueno" class="starrr" for="radio4">★</label>
+                                                    <input id="radio5" type="radio" name="estrellas" value="1">
+                                                    <label title="No es bueno" class="starrr" for="radio5">★</label>
+                                                </p>
+                                            </div>
                                 </div>
-                            <p class="help-block"></p>
                         </div>
-                        <div class="control-group form-group">
-                        <div class="controls">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary">Publicado</button>
-                                <a type="button" class="btn btn-primary" id="download_button"  download>Descarga</a>
-                                <button type="button" class="btn btn-primary">Leer</button>
-                                <p class="form-control" id="num_downloads" ></p>
-                            </div>
+                        <div class="col-md-8">
+                                    <div id="verlibro2" style="border-width: 1px 1px 1px 1px; border-radius: 2%; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+                                        <div class="control-group form-group">
+                                            <h2 id="title" class="text-center"></h2>
+                                            <div class="controls">
+                                                <h3 class="text-center">Nube de palabras</h3>
+                                                <div id="word_cloud" style="margin:auto"></div>
+                                            </div>
+                                            <div class="col-md-offset-1">
+                                                <label>Publicado: <strong>11/11/2018</strong></label>
+                                                <a id="download_button" type="button" title="Descargar" class="btn btn-verlibro" download><i class="fas fa-download"></i></a>
+                                                <button type="button" title="Leer"class="btn btn-verlibro" onclick="window.open();parent.opener=top;opener.close();"><i class="fab fa-readme"></i></button>
+                                                <label>Descargas: <span id="num_downloads"></span> </label>
+                                            </div>
+                                        </div>
+                                    </div>
                         </div>
-                    </div>
-                    </div>
-            </div>
-        </form>
-    </div>
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-5">
-            <form>
-                <div class="col-md-12">
-                    <textarea name="" id="" rows="10"></textarea>
+                   </div>
                 </div>
-            </form>
+        </div>
+</div> <br>
+<div class="container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-12">
+                    <div class="verlibro">
+                        <div class="panel-heading"> 
+                            <!-- <span class="glyphicon glyphicon-comment"></span> Barra de comentario (!--"Acordeón"--)  -->
+                            <!--
+                                <div class="btn-group pull-right"> 
+                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"> 
+                                    <span class="glyphicon glyphicon-chevron-down"></span> 
+                                </button>
+                            </div>
+                            -->
+                        </div> 
+                        <div class="panel-body"> 
+                            <ul id="comments" >
+                            </ul>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="input-group"> 
+                                <input id="comment" type="text" class="form-control input-sm" placeholder="Escriba un comentario..." /> 
+                                <span class="input-group-btn"> 
+                                    <button class="btn btn-coment btn-sm" id="btn-chat" onclick="Comment.submitComment()">Comentar</button>
+                                </span>
+                            </div> 
+                        </div> 
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-<br>
+</div> <br>
 {% endblock %}
-
 {% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/ver-libro.js')}}"></script>
 <script>
     $(function(){
         getBook();

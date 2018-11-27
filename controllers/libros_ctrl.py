@@ -9,8 +9,8 @@ from sqlalchemy import desc
 import uuid
 from config.config import env
 from werkzeug.utils import secure_filename
-from flask import flash, redirect, url_for, jsonify, render_template,send_from_directory
-from ml_algos import PdfHandler
+from flask import flash, redirect, url_for, jsonify, render_template,send_from_directory, request
+from ml_algos import PdfHandler, CommentHandler
 from models import tables
 
 ## Chequear que solo existe una extension
@@ -35,12 +35,8 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            print('hey')
             total = tables.Libro.query.filter(tables.Libro.li_activo == 1)
-            print('heyhoy')
             books = tables.Libro.activeBooks(page_num)
-            print('heyhoy')
-            print(books)
             if books == None:
                 res['books'] = []
             else:
@@ -48,9 +44,9 @@ class LibrosCtrl(object):
                 serialized = [ { 'id': i.li_id,
                                 'name': i.li_titulo,
                                 'file': i.li_archivo,
-                                # 'author': i.autor.complete_name(),
                                 # 'likes': i.likes,
                                 'licencia': i.li_licencia,
+                                'autor': tables.Libro.getAuthor(i.li_id),
                                 'image': i.li_imagen } for i in books ]
                 res['books'] = serialized
             res['success'] = True
@@ -87,6 +83,15 @@ class LibrosCtrl(object):
                 'downloads': book.li_num_descargas,
                 'file': book.li_archivo,
                 'language': book.li_idioma,
+                'comments': [
+                    {
+                        'text': comment.cm_texto,
+                        'date': comment.cm_fecha_creacion,
+                        'autor': comment.autor.usuario.complete_name(),
+                        'username': comment.autor.usuario.us_nombre_usuario,
+                        'autor_id': comment.autor.ai_id,
+                    } for comment in book.comentarios
+                ],
                 'genre': [
                     {
                         'id': word.ge_id,
@@ -123,6 +128,15 @@ class LibrosCtrl(object):
                         'weight': word.pc_ocurrencia
                     } for word in book.palabras_clave
                 ],
+                'comments': [
+                    {
+                        'text': comment.cm_texto,
+                        'date': comment.cm_fecha_creacion,
+                        'autor': comment.autor.usuario.complete_name(),
+                        'username': comment.autor.usuario.us_nombre_usuario,
+                        'autor_id': comment.autor.ai_id,
+                    } for comment in book.comentarios
+                ],
                 'title': book.li_titulo,
                 'image': book.li_imagen,
                 'downloads': book.li_num_descargas,
@@ -136,8 +150,10 @@ class LibrosCtrl(object):
                     } for word in book.generos
                 ],
             }
+            commentTf = CommentHandler.CommentHandler('es', book_body['comments'])
             res['success'] = True
             res['book'] = book_body
+            res['comment_wc'] = [{'text': word[0], 'weight': word[1]} for word in commentTf.get_word_cloud(0.5)]
             resp = jsonify(res)
             return resp, 200
         except Exception as e:
@@ -205,13 +221,11 @@ class LibrosCtrl(object):
                 'success': False,
             }
             if request.method == 'POST':
-                # print(request.files['fileimg'] == None)
                 if 'filebook' not in request.files:
                     res['success'] = False
                     res['msg'] = 'Debe seleccionar un archivo del escrito'
                     res['code'] = 400
                 bookfile = request.files['filebook']
-                print('subiendo book')
                 imgfile = request.files['fileimg'] if 'fileimg' in request.files else None
                 if bookfile.filename == '':
                     res['success'] = False
@@ -220,9 +234,7 @@ class LibrosCtrl(object):
                 if (bookfile and allowed_file(bookfile, 'book')) and (imgfile or allowed_file(imgfile, 'img')):
                     bookfilename = uuid.uuid4().hex + secure_filename(bookfile.filename)
                     imgfilename = uuid.uuid4().hex + secure_filename(imgfile.filename) if imgfile else None
-                    print(imgfilename)
-                    print(bookfilename)
-                    autor = tables.AutorIndie.find(request.form['autor_id'])
+                    autor = tables.AutorIndie.exists(request.form['autor_id'])
                     newBook = tables.Libro(
                         li_titulo=request.form['book'],
                         li_idioma=request.form['language'],
@@ -241,27 +253,26 @@ class LibrosCtrl(object):
                     # pdfHandler = PdfHandler(request.form['language'])
                     word_cloud = pdfHandler.get_word_cloud(0.15)
                     newBook.saveKeyWords(word_cloud)
-                    tables.Libro.save(newBook)
-
+                    # tables.Libro.save(newBook)
+                    newBook.save()
                     if imgfilename != None: imgfile.save(os.path.join(env['UPLOADS_DIR'] + '/images', imgfilename))
                     
                     res['success'] = True
-                    return
                     res['route'] = 'libro-exito'
+                    res['book_id'] = newBook.li_id
                 else:
                     print('err')
                     res['success'] = False
                     res['msg'] = 'Formato no aceptado'
                     res['code'] = 400
-            else:
-                res['success'] = True
-                res['route'] = 'tables.Libro-exito'
+                resp = jsonify(res)
+                return resp, 200
         except Exception as e:
-            print(e)
             db.session.rollback()
-            res['route'] = 'tables.Libro-error'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
+            res['route'] = 'libro-error'
+            resp = jsonify(res)
+            return resp, 500
+
     @staticmethod
     def downloadBook(book_id):
         res = { 'success': False }
@@ -272,6 +283,36 @@ class LibrosCtrl(object):
             book.update_num_downloads()
             res['success'] = True
             res['downloads_counter'] = book.li_num_descargas
+            return jsonify(res), 200
+        except Exception as e:
+            print(e)
+            res['msg'] = 'Hubo un error al actualizar el contador de descargas'
+            return jsonify(res), 200
+
+    @staticmethod
+    def commentBook():
+        res = { 'success': False }
+        try:
+            req = request.get_json()
+            book = tables.Libro.exists(req['book_id'])
+            if not book:
+                return render_template('errors/404.html'), 404
+            comment = tables.Comentario(
+                libro_id=req['book_id'],
+                autor_id=req['autor_id'],
+                cm_texto=req['text'],
+            )
+            book.comentarios.append(comment)
+            book.save()
+            res['success'] = True
+            res['comment'] = {
+                'text': comment.cm_texto,
+                'date': comment.cm_fecha_creacion,
+                'autor': comment.autor.usuario.complete_name(),
+                'username': comment.autor.usuario.us_nombre_usuario,
+                'autor_id': comment.autor.ai_id,
+            } 
+            # res['downloads_counter'] = book.li_num_descargas
             return jsonify(res), 200
         except Exception as e:
             print(e)

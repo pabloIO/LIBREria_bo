@@ -57,11 +57,10 @@ var Auth = (function(){
             },
             data: JSON.stringify(creds),
             success: function(response){
-                console.log(response)
                 if(response.success && response.code == 200){
-                    // conversation = response.conversation;
-                    // conv = response.conversation;
-                    window.location.href = `${Config.URL}/`
+                    console.log('did it register')
+                    LocalStorage.setKeys(response.user)
+                    window.location.href = `${Config.URL}/user/dashboard`
                 }else{
                     alert(response.msg);
                 }

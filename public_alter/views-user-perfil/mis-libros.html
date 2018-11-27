@@ -1,0 +1,20 @@
+{% extends "Base/base-profile-user.html" %}
+{% block title %} Mis Libros {% endblock %}
+{% block description %} Sus publicaciones en la librería {% endblock %}
+{% block content %}
+        
+<div id="content_books" style="margin-top:20px;"></div>
+<div id="more_books">
+    <button type="button" id="nextResults" class="btn btn-upload hiddenButton">Más resultados</button>
+    <button type="button" id="nextPage" class="btn btn-upload">Más libros</button>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
+<script >
+$(function(){
+User.getBooks(true);
+});
+</script>
+{% endblock %}
