@@ -4,8 +4,9 @@ var Book = (function(){
      * @keys: [id, username, token, socket_channel, _conversation_id, sesion]
      */
     let _storage = LocalStorage;
+    var book_id = window.location.pathname.split('/').reverse()[0];
     function getBookStats(){
-        var book_id = window.location.pathname.split('/').reverse()[0];
+        // var book_id = window.location.pathname.split('/').reverse()[0];
         $.ajax({
             method: 'GET',
             url : `${Config.PUBLIC_URL}/profile/books/info/${book_id}`,
@@ -131,26 +132,108 @@ var Book = (function(){
             }
         });
     }
-    function getConversation(id){
-        // alert(request);
-        let user_id = id;
-        var conv = null;
+    function denounceBook(){
+        let desc = document.getElementById('desc').value.split();
+        if(desc == ''){
+            alert('Debe escribir su denuncia');
+            return;
+        }
+        var book_id = window.location.pathname.split('/').reverse()[0];
+        var data = {
+            desc: desc,
+            autor_id: LocalStorage.getKey('autor_id')
+        }; 
+        $.ajax({
+          method: 'PUT',
+          url: `${Config.PUBLIC_URL}/libro/${book_id}/denounce`,
+          data: JSON.stringify(data),
+          headers: {
+            'Authorization': `Bearer ${LocalStorage.getKey('token')}`,
+            'Content-Type': 'application/json'
+          },
+        }).done(function(res){
+            if(res.success){
+                alert(res.msg)
+                setTimeout(() => {
+                    $('#desc').text('');
+                    $('#denounce').modal('hide');
+                }, 2000);
+            }else{
+                alert(res);
+            }
+        });
+    }
+
+    function renderStars(){
+        var container = $('#stars');
+        var points = [1,2,3,4,5];
+        points.map((e, i) => {
+            console.log(e);
+            var input = document.createElement('input');
+            input.id = `star${e}`
+            input.setAttribute('type', 'radio');
+            input.setAttribute('name', 'estrellas');
+            input.addEventListener('click', function(){ rateBook(e)});
+
+            container.prepend(
+                input,
+                `<label class="starrr" for="star${e}">★</label>`
+            );
+        })
+    }
+
+    function rateBook(rating){
+        // var book_id = window.location.pathname.split('/').reverse()[0];
+        var data = {
+            rating: rating,
+            autor_id: LocalStorage.getKey('autor_id')
+        }; 
+        console.log(data);
+        console.log(rating)
+        // return;
+        $.ajax({
+            method: 'PUT',
+            url: `${Config.PUBLIC_URL}/libro/${book_id}/rate`,
+            data: JSON.stringify(data),
+            headers: {
+              'Authorization': `Bearer ${LocalStorage.getKey('token')}`,
+              'Content-Type': 'application/json'
+            },
+          }).done(function(res){
+              if(res.success){
+                for (let index = 0; index < rating; index++) {
+                    document.getElementById(`star${index+1}`)
+                            .setAttribute('checked', true);
+                }
+              }
+        });
+    }
+
+    function getRating(){
+        var autor_id = LocalStorage.getKey('autor_id');
         $.ajax({
             method: 'GET',
-            url : `http://192.168.0.107:3000/user/${user_id}/conversation`,
-            async: false,
-            success: function(response){
-                if(response.success){
-                    // conversation = response.conversation;
-                    conv = response.conversation;
-                }else{
-                    alert(response.msg);
+            url: `${Config.PUBLIC_URL}/libro/${book_id}/rate/${autor_id}`,
+            headers: {
+              'Authorization': `Bearer ${LocalStorage.getKey('token')}`,
+              'Content-Type': 'application/json'
+            },
+          }).done(function(res){
+              console.log(res);
+              if(res.success){
+                for (let index = 0; index < res.rating; index++) {
+                    document.getElementById(`star${index+1}`)
+                            .setAttribute('checked', true);
                 }
-            }
+              }
         });
     }
 
     return{
         getBookStats: getBookStats,
+        denounceBook: denounceBook,
+        renderStars: renderStars,
+        rateBook: rateBook,
+        getRating: getRating,
     };
 })();

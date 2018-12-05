@@ -1,0 +1,25 @@
+{% extends "Base/base-profile.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block content %}
+    <div class="col-md-9">
+        <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+            <h3 style="text-align: center">Mis publicaciones</h3>
+        </div>
+        <div class="col-sm-12 col-md-8" >
+            <div id="content_books" style="margin-top:20px;"></div>
+            <div id="more_books">
+                <button type="button" id="nextResults" class="btn btn-upload hiddenButton">Más resultados</button>
+                <button type="button" id="nextPage" class="btn btn-upload">Más libros</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script >
+    $(function(){
+        User.getBooks(true);
+    });
+</script>
+{% endblock %}

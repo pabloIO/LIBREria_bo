@@ -1,0 +1,86 @@
+{% extends "Base/base-profile.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block content %}
+<div class="col-sm-12 col-md-8">
+    <div class="col-md-12 profiel-content" >
+        <div class="modal-header">
+            <h3 style="text-align: center">Mi Perfil - Configuración<p><small></small></p></h3>
+            </div>
+            <div class="panel-default" >
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse1">Perfil de usuario</a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="collapse">
+                        <div class="col-md-12 col-lg-offset-1">
+                                <div class="col-md-5">
+                                        <div class="controls">
+                                            <div class="form-group">
+                                                <label for="autor">Nombre</label>
+                                                <input type="text" class="form-control" placeholder="Autor">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="autor">Apellido</label>
+                                                <input type="text" class="form-control" placeholder="Autor">
+                                            </div>
+                                            <p class="help-block"></p>
+                                        </div>
+                                </div>
+                                <div class="col-md-5">
+                                        <div class="controls">
+                                                <div class="form-group">
+                                                    <label>Biografía</label>
+                                                    <textarea class="form-control config-textarea" name="" id="" cols="50%" rows="6%"></textarea>
+                                                </div>
+                                            </div>
+                                </div>
+                            </div>
+                            
+                    <div class="control-group form-group">
+                        <div class="controls config-boton">
+                                <button type="button" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse2">Contraseña</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="collapse">
+                                <div class="col-md-12 col-lg-offset-1">
+                                        <div class="col-md-5">
+                                                <div class="controls">
+                                                    <div class="form-group">
+                                                        <label for="autor">Contraseña</label>
+                                                        <input type="text" class="form-control" placeholder="Autor">
+                                                    </div>
+                                                    
+                                                </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                                <div class="controls">
+                                                        <div class="form-group">
+                                                                <label for="autor">Nueva contraseña</label>
+                                                                <input type="text" class="form-control" placeholder="Autor">
+                                                            </div>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group form-group">
+                                            <div class="controls config-boton">
+                                                    <button type="button" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </div>
+                        </div>
+                    </div>
+            </div>
+            </div>
+    </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

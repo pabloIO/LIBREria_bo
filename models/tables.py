@@ -45,23 +45,55 @@ generos =  db.Table('lb_libro_genero',
     db.Column('lk_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
 )
 
-likes = db.Table('lb_like', #libro tiene like
-    db.Column('lk_id', db.Integer, primary_key=True),
-    db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
-    db.Column('autor_id', db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
-    db.Column('lk_puntaje' , (db.Integer), default=0),
-    db.Column('lk_fecha_creacion', db.DateTime, default=datetime.utcnow),
-    db.Column('lk_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
-)
+class Like(db.Model):
+    __tablename__ = 'lb_like'
+    lk_id = db.Column(db.Integer, primary_key=True)
+    libro_id = db.Column(db.Integer, db.ForeignKey('lb_libro.li_id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), nullable=False)
+    lk_puntaje = db.Column(db.Integer, default=0)
+    lk_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    lk_fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
 
-denuncias = db.Table('lb_denuncias',
-    db.Column('de_id', db.Integer, primary_key=True),
-    db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
-    db.Column('autor_id',  db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
-    db.Column('de_descripcion', db.Text, nullable=False),
-    db.Column('de_fecha_creacion', db.DateTime, default=datetime.utcnow),
-    db.Column('de_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
-)
+    autor = db.relationship('AutorIndie', backref="lb_like", lazy=True)
+    libro = db.relationship('Libro', backref="lb_like", lazy=True)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    @classmethod
+    def exists(cls, autor_id, book_id):
+        return cls.query.filter(cls.autor_id==autor_id, cls.libro_id==book_id).first()
+# likes = db.Table('lb_like', #libro tiene like
+#     db.Column('lk_id', db.Integer, primary_key=True),
+#     db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
+#     db.Column('autor_id', db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
+#     db.Column('lk_puntaje' , (db.Integer), default=0),
+#     db.Column('lk_fecha_creacion', db.DateTime, default=datetime.utcnow),
+#     db.Column('lk_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
+# )
+
+class Denuncias(db.Model):
+    __tablename__ = 'lb_denuncias'
+    de_id = db.Column(db.Integer, primary_key=True)
+    libro_id = db.Column(db.Integer, db.ForeignKey('lb_libro.li_id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), nullable=False)
+    de_descripcion = db.Column(db.Text, nullable=False)
+    de_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    de_fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+# denuncias = db.Table('lb_denuncias',
+#     db.Column('de_id', db.Integer, primary_key=True),
+#     db.Column('libro_id',  db.Integer, db.ForeignKey('lb_libro.li_id'), primary_key=True),
+#     db.Column('autor_id',  db.Integer, db.ForeignKey('lb_autor_indie.ai_id'), primary_key=True),
+#     db.Column('de_descripcion', db.Text, nullable=False),
+#     db.Column('de_fecha_creacion', db.DateTime, default=datetime.utcnow),
+#     db.Column('de_fecha_actualizacion', db.DateTime, default=datetime.utcnow)
+# )
 
 class Usuario(db.Model): ##tabla chat -> pendiente...
     __tablename__ = 'lb_usuario'
@@ -134,6 +166,7 @@ class Libro(db.Model):
     li_idioma = db.Column(db.String(30), nullable=False)
     li_numero_vistas = db.Column(db.Integer, nullable=False, default=0)
     # li_nombre_autor = db.Column(db.String(150))
+    li_keywords_csv = db.Column(db.Text, nullable=True) ## new table version 1
     li_licencia = db.Column(db.String(45), nullable=False)
     li_activo = db.Column(db.Boolean, nullable=False, default=True)
     li_fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
@@ -145,7 +178,8 @@ class Libro(db.Model):
     generos = db.relationship('Genero', secondary=generos, backref=db.backref('lb_libro', lazy='dynamic'))
     palabras_clave = db.relationship('PalabrasClave', backref="lb_libro", lazy=True)
     # li_denuncias = db.relationship('Denuncia', secondary=denuncias, lazy="subquery", backref="lb_libro")
-    # denuncias = db.relationship('AutorIndie', secondary=denuncias, foreign_keys=[''],  backref=db.backref('lb_libro', lazy='dynamic'))
+    denuncias = db.relationship('Denuncias', backref='lb_libro',  lazy=True)
+    likes = db.relationship('Like', backref='lb_libro',  lazy=True)
     
     def save(self):
         db.session.add(self)
@@ -177,7 +211,7 @@ class Libro(db.Model):
     
     @classmethod
     def activeBooks(cls, page_num):
-        return cls.query.filter(cls.li_activo == 1) \
+        return cls.query.filter(cls.li_activo == True) \
                     .order_by(desc(cls.li_id)) \
                     .paginate(page=int(page_num), per_page=24) \
                     .items
@@ -203,6 +237,7 @@ class Libro(db.Model):
                 "autor_id": row[4] 
             }
         return res
+        
 class Genero(db.Model):
     __tablename__ = 'lb_genero'
     ge_id = db.Column(db.Integer, primary_key=True)

@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 from config.config import env
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required , get_jwt_identity, unset_jwt_cookies
+from flask_migrate import Migrate
 
 ###revisar xd
 '''
@@ -21,7 +22,7 @@ db = SQLAlchemy(app)
 '''
 
 app = Flask(__name__, template_folder="public", static_folder='static')
-app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = env['SQL_CONF']['DB_URI_MYSQL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = env['APP_SECRET']
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
@@ -33,6 +34,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 from models import tables
 from controllers import libros_ctrl, poem_ctrl, login_ctrl, users_ctrl
@@ -156,6 +158,10 @@ def get_my_books():
 def get_my_book_stats(book_id):
     return render_template('views/estadisticas-libro.html')
 
+@app.route("/user/autor/my-books/stats", methods=['GET'])
+def get_my_books_stats():
+    return render_template('views/estadisticas-libros.html')
+
 @app.route("/user/autor/followers", methods=['GET'])
 def get_followers_view():
     return render_template('views/seguidores.html')
@@ -164,6 +170,9 @@ def get_followers_view():
 def get_following_view():
     return render_template('views/siguiendo.html')
 
+@app.route("/user/autor/config")
+def get_config():
+    return render_template('views/configuracion.html')
 #############################
 #############################
 #############################
@@ -198,9 +207,17 @@ def upload_book():
 def download_book(book_id):
     return libros_ctrl.LibrosCtrl.downloadBook(book_id)
 
-@app.route(env['API_VERSION'] + "/libro/denounce", methods=['POST', 'GET'])
-def denounce_book():
-    return libros_ctrl.LibrosCtrl.denounceBook(db, request, Response)
+@app.route(env['API_VERSION'] + "/libro/<book_id>/denounce", methods=['PUT'])
+def denounce_book(book_id):
+    return libros_ctrl.LibrosCtrl.denounceBook(book_id)
+
+@app.route(env['API_VERSION'] + "/libro/<book_id>/rate", methods=['PUT'])
+def rate_book(book_id):
+    return libros_ctrl.LibrosCtrl.rateBook(book_id)
+
+@app.route(env['API_VERSION'] + "/libro/<book_id>/rate/<autor_id>", methods=['GET'])
+def get_rating(book_id, autor_id):
+    return libros_ctrl.LibrosCtrl.getRating(book_id, autor_id)
 
 @app.route(env['API_VERSION'] + "/profile-author/<author_id>", methods=['GET'])
 def get_author_data(author_id):
@@ -229,6 +246,10 @@ def get_autor_books(autor_id):
 @app.route(env['API_VERSION'] + "/profile/books/info/<book_id>", methods=['GET'])
 def get_book_stats(book_id):
     return libros_ctrl.LibrosCtrl.getBookStatistics(book_id)
+
+@app.route(env['API_VERSION'] + "/profile/books/stats/<autor_id>", methods=['GET'])
+def get_books_stats(autor_id):
+    return libros_ctrl.LibrosCtrl.getBooksStatistics(autor_id)
 
 #############################
 #############################

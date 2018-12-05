@@ -43,6 +43,7 @@ function getBook(){
       document.getElementById('download_button').setAttribute('href', `${Config.URL}/static/books/${res.book.file}`);
       document.getElementById("download_button").addEventListener("click", downloadBook);
       document.getElementById("title").innerHTML = res.book.title;
+      document.getElementById('date_release').innerHTML = res.book.created_at;
       // /static/books/${book}
       $('#num_downloads').text(`${res.book.downloads}`);
       res.book.comments.map((e, i) => {
@@ -165,13 +166,16 @@ function formato_item(book, show_info){
         tituloDom = `<h3>${tituloBien}</h3>`;
     };
     let contenido_item;
+    let autor_ref = book.autor.autor_id != LocalStorage.getKey('autor_id') 
+                      ? `${Config.URL}/user/perfil/${book.autor.autor_id}`
+                      : `${Config.URL}/user/perfil`
     if(!show_info){
       contenido_item =
       `<div class="col-md-4 col-sm-4">
           <div class="panel panel-warning">
               <div class="panel-heading">
                 <a href="/user/libro/${book.id}">${tituloDom}</a>
-                <a class="text-center" href="${Config.URL}/user/perfil/${book.autor.autor_id}">
+                <a class="text-center" href="${autor_ref}">
                   <i>@${book.autor.name}</i>
                 </a>
               </div>
@@ -209,7 +213,6 @@ function formato_item(book, show_info){
     }
     return contenido_item;
 }
-// <a href="#" onclick="openDenounce(${id})" data-toggle="modal" data-target="#denounce" title="Información y Denuncia"><i class="fas fa-info-circle"></i></a>
 
 const removeBooksDom = function(){
   const currentBooks = document.getElementById('content_books');
@@ -235,20 +238,6 @@ let searchResults;
 const openDenounce = function(id){
   book_id = id;
   console.log(book_id)
-}
-
-const denounceBook = function(){
-  let desc = document.getElementById('desc').value;
-  $.ajax({
-    method: 'POST',
-    url: `${Config.PUBLIC_URL}/libro/denounce`,
-    data: {desc: desc, id: book_id},
-    headers: {
-      'Authorization': `Bearer ${LocalStorage.getKey('token')}`
-    },
-  }).done(function(res){
-    alert(res.msg);
-  });
 }
 
 const filterBooks = function(criteria){

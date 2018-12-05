@@ -10,9 +10,10 @@ import uuid
 from config.config import env
 from werkzeug.utils import secure_filename
 from flask import flash, redirect, url_for, jsonify, render_template,send_from_directory, request
-from ml_algos import PdfHandler, CommentHandler
+from ml_algos import PdfHandler, CommentHandler, CsvHandler
 from models import tables
-
+import datetime
+import numpy as np
 ## Chequear que solo existe una extension
 def allowed_file(file, type):
     if type == 'img' and file == None:
@@ -35,7 +36,7 @@ class LibrosCtrl(object):
             res = {
                 'success': False,
             }
-            total = tables.Libro.query.filter(tables.Libro.li_activo == 1)
+            total = tables.Libro.query.filter(tables.Libro.li_activo == True)
             books = tables.Libro.activeBooks(page_num)
             if books == None:
                 res['books'] = []
@@ -83,6 +84,7 @@ class LibrosCtrl(object):
                 'downloads': book.li_num_descargas,
                 'file': book.li_archivo,
                 'language': book.li_idioma,
+                'created_at': datetime.datetime.strftime(book.li_fecha_creacion, '%Y-%m-%d'),
                 'comments': [
                     {
                         'text': comment.cm_texto,
@@ -164,6 +166,43 @@ class LibrosCtrl(object):
             return resp, 500
 
     @staticmethod
+    def getBooksStatistics(autor_id):
+        try:
+            res = {
+                'success': False,
+            }
+            autor = tables.AutorIndie.exists(autor_id)
+            if not autor:
+                return render_template('errors/404.html'), 404
+            books = autor.publicacion
+            report_body = [
+                {
+                    'id': book.li_id,
+                    'title': book.li_titulo,
+                    'image': book.li_imagen,
+                    'downloads': book.li_num_descargas,
+                    'views': book.li_numero_vistas,
+                    'likes': int(np.sum([ like.lk_puntaje for like in book.likes ]))
+                }
+                for book in books
+            ]
+            keywords = []
+            for book in books:
+                _keywords = [ {'text': keyword.pc_palabra, 'weight': keyword.pc_ocurrencia } for keyword in book.palabras_clave ]
+                keywords.extend(_keywords)
+            res['word_cloud_keywords'] = keywords
+            res['success'] = True
+            res['books'] = report_body
+            resp = jsonify(res)
+            return resp, 200
+        except Exception as e:
+            print(e)
+            # db.session.rollback()
+            res['msg'] = 'Hubo un error al cargar el Libro, inténtelo nuevamente'
+            resp = jsonify(res)
+            return resp, 500
+
+    @staticmethod
     def searchBook(query_p, db, response):
         try:
             res = {
@@ -196,23 +235,69 @@ class LibrosCtrl(object):
             return response(json.dumps(res), mimetype='application/json')
 
     @staticmethod
-    def denounceBook(db, request, response):
+    def denounceBook(book_id):
         try:
             res = {
                 'success': False,
             }
-            book = tables.Libro.query.get(request.form['id'])
-            book.denuncia_derechos = request.form['desc']
-            book.activo = False
-            db.session.commit()
+            req = request.get_json()
+            print(req)
+            denounce = tables.Denuncias(
+                de_descripcion=req['desc'],
+                autor_id=req['autor_id'],
+                libro_id=book_id
+            )
+            print(denounce)
+            denounce.save()
             res['success'] = True
-            res['msg'] = 'El tables.Libro que subió acaba de ser denunciado, revisaremos su solicitud, por el momento ha sido dado de baja de la LIBREria, recargue la página para ver los cambios'
+            res['msg'] = 'El libro acaba de ser denunciado, revisaremos su solicitud para tomar las acciones pertinentes, gracias'
+            return jsonify(res), 200
         except Exception as e:
             print(e)
-            db.session.rollback()
             res['msg'] = 'Hubo un error al procesar su solicitud, inténtelo nuevamente'
-        finally:
-            return response(json.dumps(res), mimetype='application/json')
+            return jsonify(res), 500
+        
+    @staticmethod
+    def rateBook(book_id):
+        try:
+            res = {
+                'success': False,
+            }
+            req = request.get_json()
+            rate = tables.Like.exists(req['autor_id'], book_id)
+            if not rate:
+                like = tables.Like(
+                    autor_id=req['autor_id'],
+                    libro_id=book_id,
+                    lk_puntaje=req['rating']
+                )
+                like.save()
+            else:
+                rate.lk_puntaje = req['rating']
+                rate.save()
+            res['success'] = True
+            res['msg'] = 'Se agrego su puntuación'
+            return jsonify(res), 200
+        except Exception as e:
+            print(e)
+            res['msg'] = 'Hubo un error al agregar su puntuacion'
+            return jsonify(res), 500
+
+    @staticmethod
+    def getRating(book_id, autor_id):
+        try:
+            res = {
+                'success': False,
+            }
+            rate = tables.Like.exists(autor_id, book_id)
+            res['rating'] = rate.lk_puntaje if rate else 0
+            res['success'] = True
+            res['msg'] = 'Se agrego su puntuación'
+            return jsonify(res), 200
+        except Exception as e:
+            print(e)
+            res['msg'] = 'Hubo un error al agregar su puntuacion'
+            return jsonify(res), 500
 
     @staticmethod
     def uploadBook(db, request, response):
@@ -251,12 +336,13 @@ class LibrosCtrl(object):
                     bookfile.save(path_book)
                     pdfHandler = PdfHandler.PdfHandler(request.form['language'], path_book)
                     # pdfHandler = PdfHandler(request.form['language'])
-                    word_cloud = pdfHandler.get_word_cloud(0.15)
+                    word_cloud, df = pdfHandler.get_word_cloud(0.15)
+                    # csv = CsvHandler.CsvHandler(bookfilename.replace('.pdf', '.csv'))
+                    # newBook.li_keywords_csv = csv_file
                     newBook.saveKeyWords(word_cloud)
                     # tables.Libro.save(newBook)
                     newBook.save()
                     if imgfilename != None: imgfile.save(os.path.join(env['UPLOADS_DIR'] + '/images', imgfilename))
-                    
                     res['success'] = True
                     res['route'] = 'libro-exito'
                     res['book_id'] = newBook.li_id

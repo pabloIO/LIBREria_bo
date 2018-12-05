@@ -36,10 +36,11 @@ class PdfHandler(TfIdfAnalyzer):
         total_df = {}
         matrix, features = self.tf_idf(data, max_df)
         data_frame = pd.DataFrame(matrix, columns=features)
+        ## convert DF into CSV file
         for f in features:
             count = np.sum(data_frame[f])
             total_df[f] = count
         dict_sort = sorted(total_df.items(), key=lambda kv: kv[1])
         ## get 100 frequent items
         filtered = dict_sort[::-1][:100]
-        return filtered
+        return filtered, data_frame

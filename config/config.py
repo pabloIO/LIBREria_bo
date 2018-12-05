@@ -13,8 +13,8 @@ env = {
         'DB_NAME'  : 'libreria',
         'USER_NAME': 'Libre',
         'PASSWORD': 'libre2018User_',
-        
-        'DB_URI'   :  'mysql+pymysql://root:@localhost/libreria',
+        'DB_URI_MYSQL':  'mysql+pymysql://root:@localhost/libreria',
+        'DB_URI_POSTGRES':  'postgresql+psycopg2://pablojordan:pablojordan@localhost/libreria',
         #'DB_URI'   : str.format('sqlite:///{0}', os.path.abspath('database/libreria.db')) if 'PYTHONANYWHERE_DOMAIN' not in  os.environ else 'sqlite:////home/lalibreria/LIBREria/database/libreria.db',
     },
     'UPLOADS_DIR': os.path.abspath('static') if 'PYTHONANYWHERE_DOMAIN' not in  os.environ else os.path.abspath('LIBREria/static'),

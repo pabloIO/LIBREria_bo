@@ -74,51 +74,105 @@
     </div>
 </div> -->
 <!--Fin-->
-<div class="container-fluid">
-        <div class="row col-sm-10 col-md-offset-1">
-                <div class="col-sm-12 col-md-4">
-                    <div class="col-md-12 perfil-img">
-                        <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
-                    </div>
-                    <div class="col-md-12">
-                        <div class="list-unstyled list-inline perfil-pa">
-                            <p id="name"><strong></strong></p>
-                            <a  id="username"><em></em></a>
-                            <div id="following-container"></div>
-                        </div> 
-                    </div>
-                    <!--
-                    <div class="col-md-12 text-center">
-                        <ul class="list-unstyled list-inline list-social-icon">
-                            <li>
-                                <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
-                            </li
-                            <li>
-                                <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
-                            </li>
-                        </ul>
-                    </div>
-                    -->
-                    <div class="col-sm-12 col-md-12">
-                        <br>
-                        <ul class="list-group list-primary">
-                            <a id="" href="/user/perfil" class="list-group-item">Ver Perfil</a>
-                            <a id="autor_books" href="/user/autor/my-books" class="list-group-item">Mis libros</a>
-                            <a id="" href="/user/autor/followers" class="list-group-item" href="">Seguidores</a>
-                            <a id="" href="/user/autor/following" class="list-group-item">Siguiendo</a>
-                            <a id="config" href="/user/autor/config" class="list-group-item">Configuración</a>
-                            <a id="stats-books" href="/user/autor/my-books/stats" class="list-group-item">Estadísticas generales</a>
-                        </ul>
-                    </div>
+<div class="row">
+        <div class="col-md-3">
+            <div class="col-md-12">
+                <img id="user_img" class="img-responsive img-portfolio img-circle img-hover">
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-8">
+                    <p id="name"><strong></strong></p>
+                    <a  id="username"><em></em></a>
                 </div>
-                <!--FIN-->
-        {% block content %}{% endblock %}
+                <div class="col-md-4">
+                    <div id="following-container"></div>
+                </div> 
+            </div>
+            <!--
+            <div class="col-md-12 text-center">
+                <ul class="list-unstyled list-inline list-social-icon">
+                    <li>
+                        <a href="#"><i class="editIcon icon-facebook-square editSizeIcons"></i></a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="editIcon icon-twitter-square editSizeIcons"></i></a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="editIcon icon-google-plus-square editSizeIcons"></i></a>
+                    </li>
+                </ul>
+            </div>
+            -->
+            <div class="col-md-12">
+                <br>
+                <ul class="list-group list-primary">
+                    <a href="#" class="list-group-item">Favoritos</a>
+                    <a href="/user/autor/my-books" class="list-group-item">Mis libros</a>
+                    <a href="/user/autor/followers" class="list-group-item" href="">Seguidores</a>
+                    <a href="/user/autor/following" class="list-group-item">Siguiendo</a>
+                    <a href="" class="list-group-item">Configuración</a>
+                </ul>
+            </div>
         </div>
+        <!--FIN-->
+{% block content %}{% endblock %}
+<!--Modal subir libro-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Sube un libro</h4>
+                </div>
+                <form class="" id="uploadBook" enctype="multipart/form-data">
+                  <div class="modal-body">
+                      <blockquote >
+                        <i>La LIBREría tiene como objetivo difundir material bibliógrafico propios del dominio público, ayúdanos a difundir.</i>
+                      </blockquote>
+                      <div class="form-group">
+                        <label for="autor">Autor</label>
+                        <input type="text" class="form-control" id="autor" name="author" aria-describedby="autorhelp" placeholder="Autor" readonly>
+                      </div>
+                      <div class="form-group">
+                        <label for="libro">Título</label>
+                        <input type="text" class="form-control" id="libro" name="book" aria-describedby="librohelp" placeholder="Libro" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="genero">Genero (opcional)</label>
+                        <input type="text" class="form-control" id="genero" name="genre" aria-describedby="generohelp" placeholder="Género">
+                      </div>
+                      <div class="form-group">
+                        <label for="idioma">Idioma</label>
+                        <input type="text" class="form-control" id="idioma" name="language" aria-describedby="idiomahelp" placeholder="Idioma">
+                      </div>
+                      <div class="form-group">
+                        <label for="lice">Licencia</label>
+                        <select class="" name="licence" id="lice">
+                          <option value="Dominio público">Dominio público</option>
+                          <option value="Creative Commons">Creative Commons</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="filebook">Escrito digital</label>
+                        <input type="file" class="form-control" id="filebook" name="filebook" aria-describedby="filehelp" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="imagen">Imagen (opcional)</label>
+                        <input type="file" class="form-control" id="imagen" name="fileimg" aria-describedby="imagehelp">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <div class="alert alert-success" id="loading">
+                        <strong>Su libro esta siendo subido, espere porfavor</strong>
+                      </div>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                      <button type="button" class="btn btn-primary" onclick="uploadBook()">Subir</button>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-<br>
     <footer>
         <div class="container">
             <div class="row">
@@ -135,62 +189,7 @@
             </div>
         </div>
     </footer>
-    <!--Modal subir libro-->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Sube un libro</h4>
-                </div>
-                <form class="" id="uploadBook" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <blockquote >
-                        <i>La LIBREría tiene como objetivo difundir material bibliógrafico propios del dominio público, ayúdanos a difundir.</i>
-                    </blockquote>
-                    <div class="form-group">
-                        <label for="autor">Autor</label>
-                        <input type="text" class="form-control" id="autor" name="author" aria-describedby="autorhelp" placeholder="Autor" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="libro">Título</label>
-                        <input type="text" class="form-control" id="libro" name="book" aria-describedby="librohelp" placeholder="Libro" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="genero">Genero (opcional)</label>
-                        <input type="text" class="form-control" id="genero" name="genre" aria-describedby="generohelp" placeholder="Género">
-                    </div>
-                    <div class="form-group">
-                        <label for="idioma">Idioma</label>
-                        <input type="text" class="form-control" id="idioma" name="language" aria-describedby="idiomahelp" placeholder="Idioma">
-                    </div>
-                    <div class="form-group">
-                        <label for="lice">Licencia</label>
-                        <select class="" name="licence" id="lice">
-                        <option value="Dominio público">Dominio público</option>
-                        <option value="Creative Commons">Creative Commons</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="filebook">Escrito digital</label>
-                        <input type="file" class="form-control" id="filebook" name="filebook" aria-describedby="filehelp" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="imagen">Imagen (opcional)</label>
-                        <input type="file" class="form-control" id="imagen" name="fileimg" aria-describedby="imagehelp">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="alert alert-success" id="loading">
-                        <strong>Su libro esta siendo subido, espere porfavor</strong>
-                    </div>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="uploadBook()">Subir</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
     <script src="{{ url_for('static', filename = 'bower_components/jquery/dist/jquery.min.js')}}"></script>
     <script src="{{ url_for('static', filename = 'bower_components/jqcloud2/dist/jqcloud.js')}} "></script>
     <script src="{{ url_for('static', filename = 'bower_components/chart.js/dist/Chart.min.js')}} "></script>
@@ -203,9 +202,9 @@
     <script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'assets/js/ver-libro.js')}} ">
     <script >
-        // var id = window.location.pathname.split('/').reverse()[0];
-        User.getAuthor();
-        User.isFollowing();
+        var id = window.location.pathname.split('/').reverse()[0];
+        User.getAuthor(id);
+        User.isFollowing(id);
     </script>
     {% block js %}{% endblock %}
 

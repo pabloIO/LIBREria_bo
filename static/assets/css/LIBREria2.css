@@ -1,9 +1,7 @@
-
-
 @font-face {
     font-family: 'RobotoSlab';
     src: url('../fonts/roboto_slab.woff2');
-    font-weight: normal;
+    font-weight: normal
     font-style: normal;
 }
 @font-face {
@@ -18,9 +16,7 @@
     from {opacity: 0}
     to {opacity: 100}
 }
-*{
-    font-family: 'Open Sans', sans-serif;
-}
+
 /**
     color: 128, 0, 38
     color: 189, 0, 38
@@ -233,21 +229,7 @@ header{
     transition: all 0.3s ease 0s;
     position: absolute;
     top: 85%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.panel-body .btn-view{
-    width: 60px !important;
-    height: 60px !important;
-    border-radius: 100px !important;
-    font-size: 25px !important;
-    padding: 13px 0 0 1px !important;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease 0s;
-    position: absolute;
-    top: 85%;
-    left: 80%;
+    left: 70%;
     transform: translate(-50%, -50%);
 }
 
@@ -804,232 +786,4 @@ a{
     text-align: center;
     line-height: 0;
     font-size: 3rem;
-}
-
-/*======================================================================
-
-======================================================================*/
-.perfil-img{
- margin-top: 40px;
-}
-
-.perfil-img img{
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-right: 50px;
-}
-
-.perfil-pa{
-    font-size: 30px;
-}
-
-.perfil-pa p{
-    font-size: 30px;
-    margin-top: 3px;
-}
-
-.perfil-pa a{
-    font-size: 20px;
-    font-style:italic;
-}
-
-.ps{
-    padding: 15px;
-}
-
-.profiel-content {
-    border-width: 1px 1px 1px 1px;
-    border-radius: 2%; border-style: solid;
-    border-color: rgb(219, 216, 216);
-    background: #ffffff;
-    margin-top: 40px;
-}
-
-.btn-config-editar{
-    margin-top: -2px;
-}
-/*=======================================================================
-                USUARIO CUADRO SEGUIDORES/SIGUIENDO
-=======================================================================*/
-.cuadro-user{
-    width: 100%;
-    margin:  auto;
-    grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
-    box-sizing: border-box;
-    padding: 20px;
-    margin-top: 60px;
-    border: none;
-    border-bottom-left-radius: 5%;
-    border-bottom-right-radius: 5%;
-}
-
-.cuadro-user .caja-user{
-    position: relative;
-    padding: 70px 2px 2px;
-    transition: 0.5s;
-    text-align: center;
-    border-bottom-left-radius: 5%;
-    border-bottom-right-radius: 5%;
-    background: linear-gradient(to bottom, #fbf7c8 20%,rgba(254, 185, 163) 100%);
-    
-}
-
-.cuadro-user .caja-user p{
-    margin: 13px;
-    padding: 0;
-    line-height: 20px;
-    transition: 0.5s;
-    text-align: justify;
-    font-size: 13px;
-    color: #a3a2a2 !important;
-}
-
-.cuadro-user .caja-user h4 {
-    margin: 0;
-    padding: 0;
-    transition: 0.5s;
-    font-size: 15px;
-    font-weight: 100%;
-    line-height: 15px;
-    color: #cacaca !important;
-}
-
-.cuadro-user .caja-user h4 span{
-    font-weight: 10px;
-    font-size: 12px;
-    color: rgb(180, 180, 182) !important;
-    transition: 0.5s;
-    font-style: italic;
-}
-
-.cuadro-user .caja-user .image-user{
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-    top: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.cuadro-user .caja-user .image-user2{
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-    top: -90px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #4f5a76;
-    overflow: hidden;
-}
-
-.cuadro-user .caja-user .image-user img{
-    width: 100%;
-    height: 100%;
-}
-
-.cuadro-user .caja-user:before{
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 80px;
-    background: url();
-    background-size: cover;
-    opacity: 0.05;
-    pointer-events: none;
-    transition: 0.5s;
-}
-
-.cuadro-user .caja-user:hover :before{
-    opacity: 1;
-    transform: translateY(-60px)
-}
-
-@media (max-width: 768px){
-    .cuadro-user .caja-user{
-        margin-top: 80px;
-    }
-}
-
-.btn-no-seguir{
-    border-color: #82c2bd !important;
-    color: #fff !important;
-    border: solid 2px;
-    background: #82c2bd;
-    border-radius: 2em;
-    position: relative;
-    min-width: 120px;
-    margin: 10px;
-}
-
-.btn-seguir{
-    border-color: #82c2bd !important;
-    color: #82c2bd !important;
-    border: solid 2px;
-    background: #fff;
-    border-radius: 2em;
-    position: relative;
-    min-width: 120px;
-    margin: 10px;
-}
-.btn-seguir:hover, .btn-no-seguir:hover{
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.btn-no-seguir2{
-    border-color: #82c2bd !important;
-    color: #fff !important;
-    border: solid 2px;
-    background: #82c2bd;
-    border-radius: 2em;
-    position: relative;
-    min-width: 120px;
-    margin: 10px;
-}
-
-.btn-seguir2{
-    border-color: #82c2bd !important;
-    color: #82c2bd !important;
-    border: solid 2px;
-    background: #fff;
-    border-radius: 2em;
-    position: relative;
-    min-width: 200px;
-    margin: 10px;
-}
-.btn-seguir2:hover, .btn-no-seguir2:hover{
-    text-decoration: none;
-    cursor: pointer;
-}
-/*=======================================================================
-                USUARIO CONFIGURACIÓN
-=======================================================================*/
-.panel-title a{
-    text-decoration: none;
-}
-
-.config-textarea{
-    resize: none;
-}
-
-.collapse .controls{
-    margin-top: 10px;
-}
-
-.config-boton{
-    text-align: center !important;
-    padding: 20px 0px 25px 0px !important
-}
-
-.config-boton .btn-primary{
-    background-color: #bee0dd !important;
-    border-color: #bee0dd !important;
-    border-radius: 5px !important;
 }

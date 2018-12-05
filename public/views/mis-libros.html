@@ -1,18 +1,32 @@
 {% extends "Base/base-profile.html" %}
 {% block title %}LIBREría{% endblock %}
 {% block content %}
-    <div class="col-md-9">
-        <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+    <div class="col-sm-10 col-md-8"><br>
+        <div class="col-md-12 profiel-content">
             <h3 style="text-align: center">Mis publicaciones</h3>
+        <div class="col-md-12"> 
+            <div class="col-md-8 col-lg-offset-2">
+                    <form role="form page-head-line" id="filterBooks">
+                        <div class="form-group has-feedback">
+                            <input type="text"
+                                class="form-control input-search"
+                                id="criteria"
+                                placeholder="Buscar T&iacute;tulo o Autor"/>
+                            <input type="reset"
+                                id="search_clear"
+                                class="form-control-feedback"
+                                value="&#xf002;">
+                        </div>
+                    </form>
+                </div>
         </div>
-        <div class="col-sm-12 col-md-8" >
+        <div class="col-sm-12" >
             <div id="content_books" style="margin-top:20px;"></div>
             <div id="more_books">
                 <button type="button" id="nextResults" class="btn btn-upload hiddenButton">Más resultados</button>
                 <button type="button" id="nextPage" class="btn btn-upload">Más libros</button>
             </div>
         </div>
-    </div>
     </div>
 </div>
 {% endblock %}

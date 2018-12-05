@@ -12,24 +12,15 @@
             <div class="col-md-10 col-md-offset-1">
                         <div class="col-md-4">
                                 <div id="verlibro1" style="border-width: 1px 1px 1px 1px; border-radius: 2%; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
-                                        <button class="btn btn-upload">Denunciar Libro</button>
+                                        <button class="btn btn-upload" data-toggle="modal" data-target="#denounce">Denunciar Libro</button>
                                     <div class="control-group form-group">
-                                                <div class="controls">
-                                                    <img id="img_book" width="100%" height="auto" class="img-responsive to-center">
-                                                </div>
-                                                <p class="clasificacion">
-                                                    <input id="radio1" type="radio" name="estrellas" value="5" display="none">
-                                                    <label title="El mejor" class="starrr" for="radio1">★</label>
-                                                    <input id="radio2" type="radio" name="estrellas" value="4">
-                                                    <label title="Es muy bueno" class="starrr" for="radio2">★</label>
-                                                    <input id="radio3" type="radio" name="estrellas" value="3">
-                                                    <label title="Es bueno" class="starrr" for="radio3">★</label>
-                                                    <input id="radio4" type="radio" name="estrellas" value="2">
-                                                    <label title="Es relativamente Bueno" class="starrr" for="radio4">★</label>
-                                                    <input id="radio5" type="radio" name="estrellas" value="1">
-                                                    <label title="No es bueno" class="starrr" for="radio5">★</label>
-                                                </p>
-                                            </div>
+                                        <div class="controls">
+                                            <img id="img_book" width="100%" height="auto" class="img-responsive to-center">
+                                        </div>
+                                        <div id="stars" class="clasificacion" style="margin:auto;">
+                                            
+                                        </div>
+                                    </div>
                                 </div>
                         </div>
                         <div class="col-md-8">
@@ -41,10 +32,11 @@
                                                 <div id="word_cloud" style="margin:auto"></div>
                                             </div>
                                             <div class="col-md-offset-1">
-                                                <label>Publicado: <strong>11/11/2018</strong></label>
                                                 <a id="download_button" type="button" title="Descargar" class="btn btn-verlibro" download><i class="fas fa-download"></i></a>
-                                                <button type="button" title="Leer"class="btn btn-verlibro" onclick="window.open();parent.opener=top;opener.close();"><i class="fab fa-readme"></i></button>
-                                                <label>Descargas: <span id="num_downloads"></span> </label>
+                                                <button type="button" title="Leer"class="btn btn-verlibro" onclick="window.open();parent.opener=top;opener.close();"><i class="fab fa-readme"></i></button><br>
+                                                <span>Descargas: <span id="num_downloads"></span> </span><br>
+                                                <span>Publicado en: <strong id="date_release"></strong></span>
+
                                             </div>
                                         </div>
                                     </div>
@@ -86,13 +78,41 @@
             </div>
         </div>
     </div>
-</div> <br>
+</div>
+<div class="modal fade" id="denounce" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Denuncia derechos de autor</h4>
+            </div>
+            <form class="" id="uploadBook">
+              <div class="modal-body">
+                  <blockquote >
+                    <i>La LIBREría solamente difunde material con licencias libres y de autoría propia, si el libro que selecciono no cumple con estas características,
+                      escribe tu denuncia a continuación:</i>
+                  </blockquote>
+                  <div class="form-group">
+                    <textarea type="text" class="form-control" id="desc" name="desc" aria-describedby="autorhelp" placeholder="Escriba su denuncia" required></textarea>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-primary" onclick="Book.denounceBook()">Subir</button>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 {% block js %}
 <script src="{{ url_for('static', filename = 'assets/js/ver-libro.js')}}"></script>
+<script src="{{ url_for('static', filename = 'assets/js/Book.js')}}"></script>
 <script>
     $(function(){
         getBook();
+        Book.renderStars();
+        Book.getRating();
     });
 </script>
 {% endblock %}

@@ -1,0 +1,48 @@
+{% extends "Base/base-profile.html" %}
+{% block title %}LIBREría{% endblock %}
+{% block content %}
+    <!--FIN-->
+    <div class="col-md-8">
+        <div class="col-md-12" style="background: #ffffff;">
+            <h3 style="text-align: center" id="name_autor"></h3>
+        </div>
+        <div class="col-md-12" style="background: #ffffff;">
+            <h4 class="text-center">Vistas y descargas de todos los libros</h4>
+            <canvas id="line_chart" style="margin:auto;"></canvas>
+        </div>
+        <div class="col-md-12" style="background: #ffffff;">
+            <h3 class="text-center">Mis palabras más frecuentes</h3>
+            <div id="keyword_word_cloud" style="margin:auto;"></div>
+        </div>
+        <!-- <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: rgb(219, 216, 216); background: #ffffff;">
+            <h3 style="text-align: center" id="book_title"></h3>
+        </div> -->
+        <!-- <div class="col-md-12" style="background: #ffffff;">
+            <h3 class="text-center">Palabras más frecuentes en el libro</h3>
+            <div id="word_cloud_book" style="margin:auto;"></div>
+        </div> -->
+        <!-- <div class="col-md-12" style="background: #ffffff;">
+            <canvas id="word_cloud_book_chart" ></canvas>
+        </div>
+        <div class="col-md-12" style="background: #ffffff;">
+            <h3 class="text-center">Número de vistas y descargas</h3>
+            <canvas id="comparison_chart" ></canvas>
+        </div>
+        <div class="col-md-12" style="background: #ffffff;">
+            <h3 class="text-center">Palabras más frecuentes en cometarios</h3>
+            <div id="comment_word_cloud" style="margin:auto;"></div>
+        </div> -->
+    </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename = 'assets/js/User.js')}}"></script>
+<!-- <script src="{{ url_for('static', filename = 'assets/js/Book.js')}}"></script> -->
+<script >
+    $(function(){
+        User.getUserData();
+        User.getBooksStats();
+    });
+</script>
+{% endblock %}

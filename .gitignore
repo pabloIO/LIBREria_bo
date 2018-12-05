@@ -10,6 +10,7 @@ static/images/
 
 old_public/
 bower_components/
+csv_files_keywords/
 
 
 # entornos virtuales python

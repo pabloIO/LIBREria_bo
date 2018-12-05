@@ -48,7 +48,17 @@ var User = (function(){
             }
         });
     }
-    function getAuthor(id){
+    function getAuthor(){
+        var path = window.location.pathname.split('/').reverse();
+        var id = !Number.isInteger(Number(path[0])) || path[1] == 'my-books' 
+                ? LocalStorage.getKey('autor_id') : window.location.pathname.split('/').reverse()[0];
+        var isMine = !Number.isInteger(Number(path[0])) || path[1] == 'my-books';
+        if(!isMine){
+            $('#autor_books').hide();
+            $('#config').hide();
+            $('#stats-books').hide()
+        }
+        
         $.ajax({
             method: 'GET',
             url : `${Config.PUBLIC_URL}/profile-author/${id}`,
@@ -78,20 +88,32 @@ var User = (function(){
                 'Content-Type': 'application/json'
             },
             success: function(res){
-                console.log(res)
                 if(res.success){
                     if(res.followers.length == 0){
                         $('#followers').append('<h4 class="text-center">No tienes seguidores</h4>')
                     }else{
                         res.followers.map((e, i) => {
+                            var bio = e.bio 
+                                ? e.bio.length > 100 
+                                    ? e.bio.slice(0, 100) + ' ...' : e.bio 
+                                : '';
                             $('#followers').append(
-                                `<a  href="${Config.URL}/user/perfil/${e.autor_id}">    
-                                    <div class="col-sm-12 col-md-4">
-                                        <img class="center-block" src="/static/users/${e.image || 'default_user.png'}" alt="">
-                                        <h3> ${e.name} </h3>
-                                        <h4><i> @${e.username} </i></h4>
-                                    </div>
-                                </a>`
+                                `<div class="col-sm-12 col-md-6">
+                                        <div class="cuadro-user">
+                                            <div class="caja-user">
+                                                <div class="image-user">
+                                                    <a  href="${Config.URL}/user/perfil/${e.autor_id}">
+                                                        <img src="/static/users/${e.image || 'default_user.png'}">
+                                                    </a>
+                                                </div>
+                                                <h4> ${e.name} <br>
+                                                    <span> @${e.username} </span>
+                                                </h4>
+                                                <p>${bio}</p>
+                                                <a class="btn btn-seguir">Seguir</a>   
+                                            </div>
+                                        </div>
+                                    </div>`
                             )
                         });
                     }
@@ -113,20 +135,32 @@ var User = (function(){
                 'Content-Type': 'application/json'
             },
             success: function(res){
-                console.log(res)
                 if(res.success){
                     if(res.following.length == 0){
                         $('#following').append('<h4 class="text-center">No sigues a nadie, busca a otros autores</h4>')
                     }else{
                         res.following.map((e, i) => {
+                            var bio = e.bio 
+                                ? e.bio.length > 100 
+                                    ? e.bio.slice(0, 100) + ' ...' : e.bio 
+                                : ''; 
                             $('#following').append(
-                                `<a  href="${Config.URL}/user/perfil/${e.autor_id}">    
-                                    <div class="col-sm-12 col-md-4">
-                                        <img class="center-block" src="/static/users/${e.image || 'default_user.png'}" alt="">
-                                        <h3> ${e.name} </h3>
-                                        <h4><i> @${e.username} </i></h4>
-                                    </div>
-                                </a>`
+                                `<div class="col-sm-12 col-md-6">
+                                        <div class="cuadro-user">
+                                            <div class="caja-user">
+                                                <div class="image-user">
+                                                    <a  href="${Config.URL}/user/perfil/${e.autor_id}">
+                                                        <img src="/static/users/${e.image || 'default_user.png'}">
+                                                    </a>
+                                                </div>
+                                                <h4> ${e.name} <br>
+                                                    <span> @${e.username} </span>
+                                                </h4>
+                                                <p> ${bio} </p>
+                                                <a class="btn btn-no-seguir">Siguiendo</a>   
+                                            </div>
+                                        </div>
+                                    </div>`
                             )
                         });
                     }
@@ -161,10 +195,13 @@ var User = (function(){
             }
         });
     }
-    function isFollowing(followed_id){
-        var id = _storage.getKey('autor_id');
-        console.log(followed_id)
-        if(id == followed_id || followed_id == 'perfil') return;
+    function isFollowing(){
+        var path = window.location.pathname.split('/').reverse();
+        var followed_id = Number.isInteger(Number(path[0])) 
+                ?  window.location.pathname.split('/').reverse()[0] : null;
+        var id = LocalStorage.getKey('autor_id');
+        // console.log(followed_id)
+        if(id == followed_id || path[0] == 'perfil' || path[0] == 'followers' || path[0] == 'following') return;
         $.ajax({
             method: 'GET',
             url : `${Config.PUBLIC_URL}/following/${id}/${followed_id}`,
@@ -221,6 +258,93 @@ var User = (function(){
         });
     }
 
+    function getBooksStats(){
+        $.ajax({
+            method: 'GET',
+            url: `${Config.PUBLIC_URL}/profile/books/stats/${LocalStorage.getKey('autor_id')}`,
+            headers: {
+              'Authorization': `Bearer ${LocalStorage.getKey('token')}`,
+              'Content-Type': 'application/json'
+            },
+          }).done(function(res){
+              console.log(res);
+              if(res.success){
+                $('#name_autor').text(LocalStorage.getKey('name'));
+                var ctxC = document.getElementById('line_chart').getContext('2d');
+                $('#keyword_word_cloud').jQCloud(res.word_cloud_keywords, {
+                    autoResize: true,
+                    width: 700,
+                    height: 400
+                });
+                var comparisonChart = new Chart(ctxC, {
+                    type: 'line',
+                    data: {
+                        labels: res.books.map((e,i) => e.title),
+                        datasets: [{
+                            label: 'Descargas',
+                            data: res.books.map((e,i) => e.downloads),
+                            backgroundColor: [
+                                'rgba(255,255,255, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgb(190,224,221)',
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 3,
+                            pointHoverBackgroundColor: '#fbf7c8',
+                            pointHoverBorderColor: 'fbf7c8',
+                            pointHoverRadius: 6
+                        },{
+                            label: 'Vistas',
+                            data: res.books.map((e,i) => e.views),
+                            backgroundColor: [
+                                'rgba(255,255,255, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgb(253,185,163)',
+                            ],
+                            borderWidth:2,
+                            borderRadius: 3,
+                            pointHoverBackgroundColor: '#fbf7c8',
+                            pointHoverBorderColor: 'fbf7c8',
+                            pointHoverRadius: 6
+                        },{
+                            label: 'Rating',
+                            data: res.books.map((e,i) => e.likes),
+                            backgroundColor: [
+                                'rgba(255,255,255, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgb(132,42,191)',
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 3,
+                            pointHoverBackgroundColor: '#fbf7c8',
+                            pointHoverBorderColor: 'fbf7c8',
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero:false
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 10
+                                }
+                            }]
+                        }
+                    }
+                });
+              }else{
+                  alert(res.msg)
+              }
+        });
+    }
+
     return{
         getUserData: getUserData,
         getBooks: getBooks,
@@ -229,5 +353,6 @@ var User = (function(){
         getAuthor: getAuthor,
         getFollowers: getFollowers,
         getFollowing: getFollowing,
+        getBooksStats: getBooksStats,
     };
 })();

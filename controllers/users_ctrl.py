@@ -44,7 +44,7 @@ class UserCtrl(object):
                     { 'id': i.li_id,
                     'name': i.li_titulo,
                     'file': i.li_archivo,
-                    # 'author': i.autor.complete_name(),
+                    'autor': { 'autor_id': autor.ai_id },
                     # 'likes': i.likes,
                     'downloads': i.li_num_descargas,
                     'views': i.li_numero_vistas,
@@ -69,6 +69,7 @@ class UserCtrl(object):
             res = {
                 'success': False,
             }
+            print(author_id)
             author = tables.AutorIndie.exists(author_id)
             # if not user:
             #     return render_template('errors/404.html'), 404
@@ -133,6 +134,8 @@ class UserCtrl(object):
             res = {
                 'success': False,
             }
+            print(user_id)
+            print(follower_id)
             following = tables.AutorSigue.is_following(user_id, follower_id)
             res['success'] = True
             res['following'] = following.as_activo if following else None
@@ -180,6 +183,8 @@ class UserCtrl(object):
             res = {
                 'success': False,
             }
+            print(author_id)
+
             _followers = tables.AutorSigue.get_followers(author_id)
             followers = []
             for follower in _followers:
@@ -187,6 +192,7 @@ class UserCtrl(object):
                     followers.append(
                     {    
                         'autor_id': follower.seguido.ai_id,
+                        'bio': follower.seguido.ai_biografia,
                         'name': follower.seguido.usuario.complete_name(),
                         'username': follower.seguido.usuario.us_nombre_usuario,
                         'image': follower.seguido.usuario.us_foto_perfil
@@ -216,6 +222,7 @@ class UserCtrl(object):
                     followers.append(
                     {    
                         'autor_id': follower.seguidor.ai_id,
+                        'bio': follower.seguidor.ai_biografia,
                         'name': follower.seguidor.usuario.complete_name(),
                         'username': follower.seguidor.usuario.us_nombre_usuario,
                         'image': follower.seguidor.usuario.us_foto_perfil
